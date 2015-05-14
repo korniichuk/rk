@@ -17,7 +17,7 @@ messages = {} # Strings for output
 
 def create_dictionaries():
     """Create "argparse" and "messages" dictionaries"""
-
+    
     config = ConfigObj(config_rk_abs_path)
     config_argparse_rel_path = config["config_argparse_rel_path"]
     config_argparse_abs_path = join(module_location, config_argparse_rel_path)
@@ -73,7 +73,7 @@ def install_kernel(args):
         kernel_dict["argv"].append(connection_file)
         kernel_dict["argv"].append(remote_host)
         with open(join(destination, "kernel.json"), 'w') as f:
-            f.write(dumps(kernel_dict, indent=1, sort_keys=True))
+            f.write(dumps(kernel_dict, indent=1, sort_keys=True))  
 
     if getuid() == 0:
         config = ConfigObj(config_rk_abs_path)
@@ -130,7 +130,19 @@ def install_kernel(args):
                 install_kernel(args)
     else:
         print(messages["_error_NoRoot"])
-        exit(1) 
+        exit(1)
+
+def show_kernels_list(args):
+    """Show list of remote jupyter kernels from kernels dict"""
+
+    config = ConfigObj(config_rk_abs_path)
+    config_kernels_rel_path = config["config_kernels_rel_path"]
+    config_kernels_abs_path = join(module_location, config_kernels_rel_path)
+    # Load kernels.json file
+    with open(config_kernels_abs_path) as f:
+        kernels_dict = load(f)
+    for key,value in kernels_dict.items():
+        print("%s (display_name: \"%s\")" % (key, value["display_name"]))
 
 def uninstall_kernel(args):
     """Uninstall remote jupyter kernel"""
@@ -171,6 +183,11 @@ def parse_command_line_args():
     parser.add_argument("-v", "--version", action="version", version="rk 0.1a")
     # Create subparsers for the top parser
     subparsers = parser.add_subparsers(title=argparse["_subparsers"])
+    # Create the parser for the "list" subcommand
+    parser_list = subparsers.add_parser("list",
+            description=argparse["_parser_list"],
+            help=argparse["_parser_list"])
+    parser_list.set_defaults(function_name=show_kernels_list)
     # Create the parser for the "install" subcommand
     parser_install = subparsers.add_parser("install",
             description=argparse["_parser_install"],
