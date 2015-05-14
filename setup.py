@@ -3,7 +3,7 @@
 from os.path import dirname, join
 from setuptools import setup
 
-setup(    
+setup(
     author = "Ruslan Korniichuk",
     author_email = "ruslan.korniichuk@gmail.com",
     classifiers = [
@@ -11,7 +11,7 @@ setup(
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "Intended Audience :: System Administrators",        
+        "Intended Audience :: System Administrators",
         "License :: Public Domain",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
@@ -23,7 +23,7 @@ setup(
         "Topic :: Utilities"
     ],
     description = ("Remote jupyter kernel/kernels administration utility"),
-    download_url = "UNKNOWN",
+    download_url = "https://github.com/korniichuk/rk/archive/0.1.zip",
     entry_points = {
         'console_scripts': 'rk = rk.rk:main'
     },
@@ -32,14 +32,14 @@ setup(
         "configobj",
         "execnet"
     ],
-    keywords = ["ipython", "jupyter", "remote kernel", "python2"],    
+    keywords = ["ipython", "jupyter", "remote kernel", "python2"],
     license = "Public Domain",
     long_description = open(join(dirname(__file__), "README.rst")).read(),
     name = "rk",
-    packages = ["rk"],    
+    packages = ["rk"],
     platforms = ["Linux"],
     scripts=['scripts/rkscript'],
-    url = "UNKNOWN",    
+    url = "https://github.com/korniichuk/rk",
     version = "0.1a2",
-    zip_safe = True   
+    zip_safe = True
 )
