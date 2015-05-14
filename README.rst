@@ -126,6 +126,10 @@ Where:
         - ``albert`` -- the remote username on a remote machine, not similar with a username on a local machine,
         - ``92.168.0.1`` -- the remote host.
 
+Show list of remote jupyter kernels from kernels dict
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ``$ rk list``
+
 Install a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ``$ rk install KERNEL_NAME``
@@ -153,6 +157,18 @@ Example:
 Uninstall a template of a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ``$ rk uninstall-template``
+
+History
+-------
+Legend
+^^^^^^
+    - **added**
+    - corrected
+    - *removed*
+
+rk 0.2
+^^^^^^
+    - **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**   
 
 .. rubric:: Footnotes
 
