@@ -1,0 +1,8 @@
+{
+ "template": {
+  "display_name": "Template",
+  "interpreter": "python",
+  "language": "python",
+  "remote_host": "remote_username@remote_host"
+ }
+}

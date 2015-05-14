@@ -1,0 +1,12 @@
+_parser
+Remote jupyter kernel/kernels administration utility
+_subparsers
+subcommands
+_parser_install
+install remote jupyter kernel
+_parser_install_template
+install template of remote kernel
+_parser_uninstall
+uninstall remote jupyter kernel
+_parser_uninstall_template
+uninstall template of remote kernel

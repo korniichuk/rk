@@ -1,0 +1,18 @@
+_delete
+KERNEL_NAME '%s' already exists. Delete files and continue? [y/n]
+_delete_template
+Template of remote kernel already exists. Delete files and continue? [y/n]
+_error_NoKernel
+Error: No KERNEL_NAME '%s' found.
+_error_NoRoot
+Error: To do that you need a superuser (root) privileges.
+_error_NoTemplate
+Error: No template of remote kernel found.
+_installed
+installed '%s' remote jupyter kernel
+_installed_template
+installed template of remote kernel
+_uninstalled
+uninstalled '%s'remote jupyter kernel
+_uninstalled_template
+uninstalled template of remote kernel

@@ -1,0 +1,99 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Remote jupyter kernel via SSH
+You will need execnet: codespeak.net/execnet.
+Make sure that you can login to a remote machine without entering password.
+
+"""
+
+from execnet import makegateway 
+from getpass import getuser
+from json import load
+from os import getcwd
+from sys import argv
+from zmq.ssh import openssh_tunnel
+
+python_interpreter = argv[1] # Absolute or non absolute path of a Python 
+                             # interpreter
+local_connection_file = argv[2] # Absolute path of a local connection file
+remote_username_at_remote_host = argv[3] # remote_host or
+                                         # remote_username@remote_host
+local_username = getuser()
+if '@' in remote_username_at_remote_host:
+    remote_username, remote_host = remote_username_at_remote_host.split('@')
+    if local_username != remote_username:
+        # Local username is NOT the same as a remote username 
+        remote_connection_file = local_connection_file.replace(local_username,
+                                                               remote_username)
+    else:
+        # Local username is the same as a remote username
+        remote_connection_file = local_connection_file
+        remote_username_at_remote_host = remote_host
+else:
+    # Local username is the same as a remote username
+    remote_connection_file = local_connection_file
+# Load a connection file
+with open(local_connection_file) as f:
+    cfg = load(f)
+# GET a current working directory of a process
+cwd = getcwd()
+# Launch a kernel process on a remote machine
+gw = makegateway("ssh=%s//python=%s" % (remote_username_at_remote_host,
+                                        python_interpreter))
+ch = gw.remote_exec("""
+    import socket
+    from IPython import start_kernel
+    from json import dumps
+    from os import chdir, getcwd
+    from os.path import exists, expanduser, isdir, join, split
+    from struct import pack
+    
+    remote_connection_file = "%s"
+    cfg = %s
+    last_cwd = "%s"
+    remote_ports = {}
+    ports = [k for k,v in cfg.items() if k.endswith("_port")]
+    # Select random ports
+    for port in ports:
+        sock = socket.socket()
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, pack("ii", 0, 0))
+        sock.bind(('', 0)) # Random free port from 1024 to 65535
+        sock_name = sock.getsockname()[1]
+        remote_ports[port] = sock_name
+        cfg[port] = sock_name
+        sock.close()
+    channel.send(remote_ports)
+    if not exists(remote_connection_file):
+        dir_name, file_name = split(remote_connection_file)
+        if exists(dir_name) and isdir(dir_name):
+            # Write a connection file
+            with open(remote_connection_file, 'w') as f:
+                f.write(dumps(cfg))
+        else:
+            path = "~/.ipython/profile_default/security"
+            default_dir_name = (expanduser(path))
+            if ((default_dir_name != dir_name) and exists(default_dir_name) and 
+                    isdir(default_dir_name)):
+                remote_connection_file = join(default_dir_name, file_name)
+                # Write a connection file to default directory
+                with open(remote_connection_file, 'w') as f:
+                    f.write(dumps(cfg))
+            else:
+                cwd = getcwd()
+                remote_connection_file = join(cwd, file_name)
+                # Write a connection file to cwd
+                with open(remote_connection_file, 'w') as f:
+                    f.write(dumps(cfg))                          
+    # SET a current working directory of a process    
+    if exists(last_cwd) and isdir(last_cwd):
+        chdir(last_cwd)
+    start_kernel(["-f", remote_connection_file])
+                    """ % (remote_connection_file, cfg, cwd))
+# Redirect localhost:local_port to remote_host:remote_port
+local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
+remote_ports = ch.receive()
+for k,v in local_ports.items():
+    openssh_tunnel(v, remote_ports[k], remote_username_at_remote_host)
+# Wait remote_exec()
+ch.receive()
