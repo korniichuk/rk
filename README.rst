@@ -178,6 +178,13 @@ Install a template of a remote jupyter kernel
 
 .. important:: After this subcommand open the  ``kernel.json`` file and change values of dict: ``$ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json``.
 
+
+Install all remote jupyter kernels from kernels dict
+----------------------------------------------------
+::
+
+    $ rk install-all
+
 Uninstall a remote jupyter kernel
 ---------------------------------
 ::
@@ -210,6 +217,7 @@ Legend
 rk 0.2
 ------
 
+* **install all remote jupyter kernels from kernels dict with a "install-all" subcommand.**
 * **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**
 
 .. rubric:: Footnotes

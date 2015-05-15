@@ -132,6 +132,24 @@ def install_kernel(args):
         print(messages["_error_NoRoot"])
         exit(1)
 
+def install_all(args):
+    """Install all remote jupyter kernels from kernels dict"""
+
+    config = ConfigObj(config_rk_abs_path)
+    config_kernels_rel_path = config["config_kernels_rel_path"]
+    config_kernels_abs_path = join(module_location, config_kernels_rel_path)
+    # Load kernels.json file
+    with open(config_kernels_abs_path) as f:
+        kernels_dict = load(f)
+    # Create kernels list from kernels dict
+    kernels_list = [k for k in kernels_dict.keys()]
+    # Sort kernels list
+    kernels_list.sort()
+    # Install remote jupyter kernels
+    for kernel in kernels_list:
+        args.kernel_name = kernel
+        install_kernel(args)
+
 def show_kernels_list(args):
     """Show list of remote jupyter kernels from kernels dict"""
 
@@ -141,8 +159,11 @@ def show_kernels_list(args):
     # Load kernels.json file
     with open(config_kernels_abs_path) as f:
         kernels_dict = load(f)
+    # Create kernels list from kernels dict
     kernels_list = [k for k in kernels_dict.keys()]
+    # Sort kernels list
     kernels_list.sort()
+    # Print kernels list
     for kernel in kernels_list:
          print("%s (display_name: \"%s\")" % (kernel,
                  kernels_dict[kernel]["display_name"]))
@@ -197,13 +218,18 @@ def parse_command_line_args():
             help=argparse["_parser_install"])
     parser_install.add_argument("kernel_name", action="store", nargs=None,
                                 type=str, metavar="KERNEL_NAME")
-    parser_install.set_defaults(function_name=install_kernel)
+    parser_install.set_defaults(function_name=install_kernel)    
     # Create the parser for the "install-template" subcommand
     parser_install_template = subparsers.add_parser("install-template",
             description=argparse["_parser_install_template"],
             help=argparse["_parser_install_template"])
     parser_install_template.set_defaults(function_name=install_kernel,
                                          kernel_name=None)
+    # Create the parser for the "install-all" subcommand
+    parser_install_all = subparsers.add_parser("install-all",
+            description=argparse["_parser_install_all"],
+            help=argparse["_parser_install_all"])
+    parser_install_all.set_defaults(function_name=install_all)
     # Create the parser for the "uninstall" subcommand
     parser_uninstall= subparsers.add_parser("uninstall",
             description=argparse["_parser_uninstall"],

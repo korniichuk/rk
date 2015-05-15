@@ -4,6 +4,8 @@ _subparsers
 subcommands
 _parser_install
 install remote jupyter kernel
+_parser_install_all
+install all remote jupyter kernels from kernels dict 
 _parser_install_template
 install template of remote kernel
 _parser_list
