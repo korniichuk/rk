@@ -17,7 +17,7 @@ messages = {} # Strings for output
 
 def create_dictionaries():
     """Create "argparse" and "messages" dictionaries"""
-    
+
     config = ConfigObj(config_rk_abs_path)
     config_argparse_rel_path = config["config_argparse_rel_path"]
     config_argparse_abs_path = join(module_location, config_argparse_rel_path)
@@ -73,7 +73,7 @@ def install_kernel(args):
         kernel_dict["argv"].append(connection_file)
         kernel_dict["argv"].append(remote_host)
         with open(join(destination, "kernel.json"), 'w') as f:
-            f.write(dumps(kernel_dict, indent=1, sort_keys=True))  
+            f.write(dumps(kernel_dict, indent=1, sort_keys=True))
 
     if getuid() == 0:
         config = ConfigObj(config_rk_abs_path)
@@ -124,7 +124,7 @@ def install_kernel(args):
             print(message_delete)
             answer = raw_input()
             answer_lower = answer.lower()
-            if ((answer_lower == 'y') or (answer_lower == 'yes') or 
+            if ((answer_lower == 'y') or (answer_lower == 'yes') or
                     (answer_lower == 'yep')):
                 uninstall_kernel(args)
                 install_kernel(args)
@@ -141,8 +141,11 @@ def show_kernels_list(args):
     # Load kernels.json file
     with open(config_kernels_abs_path) as f:
         kernels_dict = load(f)
-    for key,value in kernels_dict.items():
-        print("%s (display_name: \"%s\")" % (key, value["display_name"]))
+    kernels_list = [k for k in kernels_dict.keys()]
+    kernels_list.sort()
+    for kernel in kernels_list:
+         print("%s (display_name: \"%s\")" % (kernel,
+                 kernels_dict[kernel]["display_name"]))
 
 def uninstall_kernel(args):
     """Uninstall remote jupyter kernel"""
