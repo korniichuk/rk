@@ -114,11 +114,12 @@ The ``kernels.json`` file looks like this::
 
 Where:
 
-    * template -- the name of a remote jupyter kernel, 
-        * display_name -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [1]_,
-        * interpreter -- an entry point or an absolute path to language interpreter on a remote machine,
-        * language -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [1]_,
-        * remote_host -- just a remote host or, if your username is different on a remote machine, use this syntax: remote username AT remote host. 
+* template -- the name of a remote jupyter kernel,
+
+    * display_name -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [1]_,
+    * interpreter -- an entry point or an absolute path to language interpreter on a remote machine,
+    * language -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [1]_,
+    * remote_host -- just a remote host or, if your username is different on a remote machine, use this syntax: remote username AT remote host. 
 
 .. note:: For checking absolute path to language interpreter on a remote machine use a ``which`` Unix command [2]_. For example, for the python3 language on a remote machine: ``$ which python3``.
 
@@ -141,12 +142,13 @@ Change ``kernels.json`` file and add info about your remote jupyter kernels, for
 
 Where:
 
-    * ``albert2``, ``albert3`` -- the names of a remote jupyter kernels,
-        * ``Albert Python 2``, ``Albert Python 3`` -- the display names for the UI,
-        * ``python2``, ``python3`` -- entry points on a remote machine,
-        * ``python`` -- the name of the language of a remote jupyter kernel,
-        * ``albert`` -- the remote username on a remote machine, not similar with a username on a local machine,
-        * ``92.168.0.1`` -- the remote host.
+* ``albert2``, ``albert3`` -- the names of a remote jupyter kernels,
+
+    * ``Albert Python 2``, ``Albert Python 3`` -- the display names for the UI,
+    * ``python2``, ``python3`` -- entry points on a remote machine,
+    * ``python`` -- the name of the language of a remote jupyter kernel,
+    * ``albert`` -- the remote username on a remote machine, not similar with a username on a local machine,
+    * ``92.168.0.1`` -- the remote host.
 
 Show list of remote jupyter kernels from kernels dict
 -----------------------------------------------------
@@ -162,7 +164,7 @@ Install a remote jupyter kernel
 
 Where:
 
-    * KERNEL_NAME -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
+* KERNEL_NAME -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
 
 Example::
 
@@ -184,7 +186,7 @@ Uninstall a remote jupyter kernel
 
 Where:
 
-    * KERNEL_NAME -- a name of installed remote jupyter kernel.
+* KERNEL_NAME -- a name of installed remote jupyter kernel.
 
 Example::
 
