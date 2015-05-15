@@ -5,31 +5,31 @@ Installation
 ------------
 Install the rk from PyPI
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ sudo pip install rk``
+    $ sudo pip install rk
 
 Uninstall the rk
 ^^^^^^^^^^^^^^^^^
-    ``$ sudo pip uninstall rk``
+    $ sudo pip uninstall rk
 
 Quickstart
 ----------
 **First**, make sure that you can login to a remote machine without entering password. The most basic form of the command is:
-    ``$ ssh REMOTE_HOST``
+    $ ssh REMOTE_HOST
 
 If your username is different on a remote machine, you can specify it by using this syntax:
-    ``$ ssh REMOTE_USERNAME@REMOTE_HOST``
+    $ ssh REMOTE_USERNAME@REMOTE_HOST
 
 Example:
-    ``$ ssh albert@192.168.0.1``
+    $ ssh albert@192.168.0.1
 
 **Second**, install a template of a remote jupyter kernel:
-    ``$ rk install-template``
+    $ rk install-template
 
 The rk created a template of a remote jupyter kernel inside system kernels location ``/usr/local/share/jupyter/kernels``.
 A kernel identifies itself to jupyter by creating a directory, the name of which is used as an identifier for the kernel [1]_.
 
 **Third**, change the ``kernel.json`` file:
-    ``$ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json``
+   $ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json
 
 The ``kernel.json`` file looks like this::
 
@@ -44,42 +44,41 @@ The ``kernel.json`` file looks like this::
      "language": "python"
     }
 
-For a python2 remote jupyter kernel just change ``"remote_username@remote_host"``. For example from ``"remote_username@remote_host"`` to ``"albert@192.168.0.1"``.
+For a python2 remote jupyter kernel just change ``remote_username@remote_host``. For example from ``remote_username@remote_host`` to ``albert@192.168.0.1``.
 
 **Fourth**, launch jupyter notebook and check your new remote juputer kernel:
-    ``$ ipython notebook``
+    $ ipython notebook
 
 Choose: ``Files -> New -> Template``.
 
 User guide
 ----------
-
 Help
 ^^^^
 The standard output for –help:
-    ``$ rk -h``
+    $ rk -h
 or
-    ``$ rk --help``
+    $ rk --help
 
 For information on using subcommand "SUBCOMMAND", do:
-    ``$ rk SUBCOMMAND -h``
+    $ rk SUBCOMMAND -h
 or
-    ``$ rk SUBCOMMAND --help``
+    $ rk SUBCOMMAND --help
 
 Example:
-    ``$ rk install -h``
+    $ rk install -h
 
 Version
 ^^^^^^^^
 The standard output for –version:
-    ``$ rk -v``
+    $ rk -v
 or
-    ``$ rk --version``
+    $ rk --version
 
 Kernels dict
 ^^^^^^^^^^^^
 Open ``kernels.json`` file:
-    ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/kernels.json``
+    $ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/kernels.json
 
 The ``kernels.json`` file looks like this::
 
@@ -93,7 +92,7 @@ The ``kernels.json`` file looks like this::
     }
 
 Where:
-    - "template" -- the name of a remote jupyter kernel, 
+    - template -- the name of a remote jupyter kernel, 
         - display_name -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [1]_,
         - interpreter -- an entry point or an absolute path to language interpreter on a remote machine,
         - language -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [1]_,
@@ -128,35 +127,35 @@ Where:
 
 Show list of remote jupyter kernels from kernels dict
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ rk list``
+    $ rk list
 
 Install a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ rk install KERNEL_NAME``
+    $ rk install KERNEL_NAME
 
 where:
     - KERNEL_NAME -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
 Example:
-    ``$ rk install albert2``
+    $ rk install albert2
 
 Install a template of a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ rk install-template``
+    $ rk install-template
 
 .. important:: After this subcommand open the  ``kernel.json`` file and change values of dict: ``$ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json``.
 
 Uninstall a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ rk uninstall KERNEL_NAME``
+    $ rk uninstall KERNEL_NAME
 
 where:
     - KERNEL_NAME -- a name of installed remote jupyter kernel.
 Example:
-    ``$ rk uninstall albert2``
+    $ rk uninstall albert2
 
 Uninstall a template of a remote jupyter kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ``$ rk uninstall-template``
+    $ rk uninstall-template
 
 History
 -------
@@ -168,7 +167,7 @@ Legend
 
 rk 0.2
 ^^^^^^
-    - **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**   
+    - **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**
 
 .. rubric:: Footnotes
 
