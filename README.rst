@@ -113,6 +113,7 @@ The ``kernels.json`` file looks like this::
     }
 
 Where:
+
     * template -- the name of a remote jupyter kernel, 
         * display_name -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [1]_,
         * interpreter -- an entry point or an absolute path to language interpreter on a remote machine,
@@ -139,6 +140,7 @@ Change ``kernels.json`` file and add info about your remote jupyter kernels, for
     }
 
 Where:
+
     * ``albert2``, ``albert3`` -- the names of a remote jupyter kernels,
         * ``Albert Python 2``, ``Albert Python 3`` -- the display names for the UI,
         * ``python2``, ``python3`` -- entry points on a remote machine,
@@ -159,6 +161,7 @@ Install a remote jupyter kernel
     $ rk install KERNEL_NAME
 
 Where:
+
     * KERNEL_NAME -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
 
 Example::
@@ -180,6 +183,7 @@ Uninstall a remote jupyter kernel
     $ rk uninstall KERNEL_NAME
 
 Where:
+
     * KERNEL_NAME -- a name of installed remote jupyter kernel.
 
 Example::
