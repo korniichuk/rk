@@ -4,6 +4,8 @@ _delete_template
 Template of remote kernel already exists. Delete files and continue? [y/n]
 _error_NoKernel
 Error: No KERNEL_NAME '%s' found.
+_error_NoKernels
+Error: No KERNEL_NAME: '%s' found.
 _error_NoRoot
 Error: To do that you need a superuser (root) privileges.
 _error_NoTemplate

@@ -3,7 +3,7 @@ Remote jupyter kernel/kernels administration utility
 _subparsers
 subcommands
 _parser_install
-install remote jupyter kernel
+install remote jupyter kernel/kernels
 _parser_install_all
 install all remote jupyter kernels from kernels dict 
 _parser_install_template
@@ -11,6 +11,6 @@ install template of remote kernel
 _parser_list
 show list of remote jupyter kernels from kernels dict
 _parser_uninstall
-uninstall remote jupyter kernel
+uninstall remote jupyter kernel/kernels
 _parser_uninstall_template
 uninstall template of remote kernel

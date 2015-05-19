@@ -156,11 +156,11 @@ Show list of remote jupyter kernels from kernels dict
 
     $ rk list
 
-Install a remote jupyter kernel
--------------------------------
+Install a remote jupyter kernel/kernels
+---------------------------------------
 ::
 
-    $ rk install KERNEL_NAME
+    $ rk install KERNEL_NAME [KERNEL_NAME ...]
 
 Where:
 
@@ -169,6 +169,7 @@ Where:
 Example::
 
     $ rk install albert2
+    $ rk install albert2 albert3
 
 Install a template of a remote jupyter kernel
 ---------------------------------------------
@@ -185,11 +186,11 @@ Install all remote jupyter kernels from kernels dict
 
     $ rk install-all
 
-Uninstall a remote jupyter kernel
----------------------------------
+Uninstall a remote jupyter kernel/kernels
+-----------------------------------------
 ::
 
-    $ rk uninstall KERNEL_NAME
+    $ rk uninstall KERNEL_NAME [KERNEL_NAME ...]
 
 Where:
 
@@ -198,6 +199,7 @@ Where:
 Example::
 
     $ rk uninstall albert2
+    $ rk uninstall albert2 albert3
 
 Uninstall a template of a remote jupyter kernel
 -----------------------------------------------
@@ -217,6 +219,8 @@ Legend
 rk 0.2
 ------
 
+* **uninstall remote jupyter kernel/kernels with a "uninstall" subcommand.**
+* **install remote jupyter kernel/kernels with a "install" subcommand.**
 * **install all remote jupyter kernels from kernels dict with a "install-all" subcommand.**
 * **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**
 
