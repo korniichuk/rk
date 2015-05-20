@@ -207,6 +207,14 @@ Uninstall a template of a remote jupyter kernel
 
     $ rk uninstall-template
 
+Uninstall all jupyter kernels from kernels location
+---------------------------------------------------
+::
+
+    $ rk uninstall-all
+
+.. note:: The default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_ in the rk: ``/usr/local/share/jupyter/kernels``. Change the default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
+
 History
 =======
 Legend
@@ -219,6 +227,7 @@ Legend
 rk 0.2
 ------
 
+* **uninstall all jupyter kernels from kernels location with a "uninstall-all" subcommand.**
 * **uninstall remote jupyter kernel/kernels with a "uninstall" subcommand.**
 * **install remote jupyter kernel/kernels with a "install" subcommand.**
 * **install all remote jupyter kernels from kernels dict with a "install-all" subcommand.**

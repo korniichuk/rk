@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from errno import ENOTDIR
 from json import dumps, load
-from os import getuid, link, makedirs, remove
+from os import getuid, link, listdir, makedirs, remove
 from os.path import dirname, exists, isdir, isfile, join
 from shutil import rmtree
 from sys import argv, exit
@@ -32,8 +32,36 @@ def create_dictionaries():
     for i in range(0, len(messages_list), 2):
         messages[messages_list[i]] = messages_list[i+1]
 
+def install_all(args):
+    """Install all remote jupyter kernels from kernels dict"""
+
+    config = ConfigObj(config_rk_abs_path)
+    config_kernels_rel_path = config["config_kernels_rel_path"]
+    config_kernels_abs_path = join(module_location, config_kernels_rel_path)
+    # Load kernels.json file
+    with open(config_kernels_abs_path) as f:
+        kernels_dict = load(f)
+    # Create kernels list from kernels dict
+    kernels_list = [k for k in kernels_dict.keys()]
+    # Sort kernels list
+    kernels_list.sort()
+    # Install remote jupyter kernels
+    args.kernel_names = kernels_list
+    install_kernel(args)
+
 def install_kernel(args):
     """Install remote jupyter kernel/kernels"""
+
+    def copy_logos(img_location, logo_name_srt, destination):
+        """Copy logos"""
+
+        for size in ["32", "64"]:
+            logo_abs_path_str = join(join(module_location, img_location),
+                                     logo_name_srt)
+            logo_abs_path = logo_abs_path_str.format(size)
+            logo_name = logo_name_srt.format(size)
+            if exists(logo_abs_path) and isfile(logo_abs_path):
+                link(logo_abs_path, join(destination, logo_name))
 
     def create_directory(directory_name):
         """Create directory"""
@@ -50,17 +78,6 @@ def install_kernel(args):
                  makedirs(directory_name, mode=0o755)
             else:
                 raise exception
-
-    def copy_logos(img_location, logo_name_srt, destination):
-        """Copy logos"""
-
-        for size in ["32", "64"]:
-            logo_abs_path_str = join(join(module_location, img_location),
-                                     logo_name_srt)
-            logo_abs_path = logo_abs_path_str.format(size)
-            logo_name = logo_name_srt.format(size)
-            if exists(logo_abs_path) and isfile(logo_abs_path):
-                link(logo_abs_path, join(destination, logo_name))
 
     def create_kernel_json_file(display_name, language, script, interpreter,
                                 connection_file, remote_host, destination):
@@ -159,22 +176,67 @@ def install_kernel(args):
         print(messages["_error_NoRoot"])
         exit(1)
 
-def install_all(args):
-    """Install all remote jupyter kernels from kernels dict"""
+def main():
+    """Main function"""
 
-    config = ConfigObj(config_rk_abs_path)
-    config_kernels_rel_path = config["config_kernels_rel_path"]
-    config_kernels_abs_path = join(module_location, config_kernels_rel_path)
-    # Load kernels.json file
-    with open(config_kernels_abs_path) as f:
-        kernels_dict = load(f)
-    # Create kernels list from kernels dict
-    kernels_list = [k for k in kernels_dict.keys()]
-    # Sort kernels list
-    kernels_list.sort()
-    # Install remote jupyter kernels
-    args.kernel_names = kernels_list
-    install_kernel(args)
+    create_dictionaries()
+    args = parse_command_line_args()
+    args.function_name(args)
+
+def parse_command_line_args():
+    """Parse command line arguments"""
+
+    # Create top parser
+    parser = ArgumentParser(prog="rk", description=argparse["_parser"],
+                            add_help=True)
+    parser.add_argument("-v", "--version", action="version", version="rk 0.1a")
+    # Create subparsers for the top parser
+    subparsers = parser.add_subparsers(title=argparse["_subparsers"])
+    # Create the parser for the "list" subcommand
+    parser_list = subparsers.add_parser("list",
+            description=argparse["_parser_list"],
+            help=argparse["_parser_list"])
+    parser_list.set_defaults(function_name=show_kernels_list)
+    # Create the parser for the "install" subcommand
+    parser_install = subparsers.add_parser("install",
+            description=argparse["_parser_install"],
+            help=argparse["_parser_install"])
+    parser_install.add_argument("kernel_names", action="store", nargs='+',
+                                metavar="KERNEL_NAME")
+    parser_install.set_defaults(function_name=install_kernel)
+    # Create the parser for the "install-template" subcommand
+    parser_install_template = subparsers.add_parser("install-template",
+            description=argparse["_parser_install_template"],
+            help=argparse["_parser_install_template"])
+    parser_install_template.set_defaults(function_name=install_kernel,
+                                         kernel_names=None)
+    # Create the parser for the "install-all" subcommand
+    parser_install_all = subparsers.add_parser("install-all",
+            description=argparse["_parser_install_all"],
+            help=argparse["_parser_install_all"])
+    parser_install_all.set_defaults(function_name=install_all)
+    # Create the parser for the "uninstall" subcommand
+    parser_uninstall= subparsers.add_parser("uninstall",
+            description=argparse["_parser_uninstall"],
+            help=argparse["_parser_uninstall"])
+    parser_uninstall.add_argument("kernel_names", action="store", nargs='+',
+                                  metavar="KERNEL_NAME")
+    parser_uninstall.set_defaults(function_name=uninstall_kernel)
+    # Create the parser for the "uninstall-template" subcommand
+    parser_uninstall_template = subparsers.add_parser("uninstall-template",
+            description=argparse["_parser_uninstall_template"],
+            help=argparse["_parser_uninstall_template"])
+    parser_uninstall_template.set_defaults(function_name=uninstall_kernel,
+                                           kernel_names=None)
+    # Create the parser for the "uninstall-all" subcommand
+    parser_uninstall_all = subparsers.add_parser("uninstall-all",
+            description=argparse["_parser_uninstall_all"],
+            help=argparse["_parser_uninstall_all"])
+    parser_uninstall_all.set_defaults(function_name=uninstall_all)
+    if len(argv) == 1:
+        parser.print_help()
+        exit(0) # Clean exit without any errors/problems
+    return parser.parse_args()
 
 def show_kernels_list(args):
     """Show list of remote jupyter kernels from kernels dict"""
@@ -193,6 +255,30 @@ def show_kernels_list(args):
     for kernel in kernels_list:
          print("%s (display_name: \"%s\")" % (kernel,
                  kernels_dict[kernel]["display_name"]))
+
+def uninstall_all(args):
+    """Uninstall all jupyter kernels from kernels location"""
+
+    if getuid() == 0:
+        config = ConfigObj(config_rk_abs_path)
+        kernels_location = config["kernels_location"]
+        kernel_names = []
+        for element in listdir(kernels_location):
+            element_abs_path = join(kernels_location, element)
+            if isdir(element_abs_path):
+                rmtree(element_abs_path, ignore_errors=True)
+                kernel_names.append(element)
+        kernel_names.sort()
+        if len(kernel_names) == 0:
+            print(messages["_uninstalled_all_zero"])
+        elif len(kernel_names) == 1:
+            print(messages["_uninstalled_all"] % kernel_names[0])
+        else:
+            print(messages["_uninstalled_all_multiple"] %
+                    '\' \''.join(kernel_names))
+    else:
+        print(messages["_error_NoRoot"])
+        exit(1)
 
 def uninstall_kernel(args):
     """Uninstall remote jupyter kernel/kernels"""
@@ -240,60 +326,3 @@ def uninstall_kernel(args):
     else:
         print(messages["_error_NoRoot"])
         exit(1)
-
-def parse_command_line_args():
-    """Parse command line arguments"""
-
-    # Create top parser
-    parser = ArgumentParser(prog="rk", description=argparse["_parser"],
-                            add_help=True)
-    parser.add_argument("-v", "--version", action="version", version="rk 0.1a")
-    # Create subparsers for the top parser
-    subparsers = parser.add_subparsers(title=argparse["_subparsers"])
-    # Create the parser for the "list" subcommand
-    parser_list = subparsers.add_parser("list",
-            description=argparse["_parser_list"],
-            help=argparse["_parser_list"])
-    parser_list.set_defaults(function_name=show_kernels_list)
-    # Create the parser for the "install" subcommand
-    parser_install = subparsers.add_parser("install",
-            description=argparse["_parser_install"],
-            help=argparse["_parser_install"])
-    parser_install.add_argument("kernel_names", action="store", nargs='+',
-                                metavar="KERNEL_NAME")
-    parser_install.set_defaults(function_name=install_kernel)
-    # Create the parser for the "install-template" subcommand
-    parser_install_template = subparsers.add_parser("install-template",
-            description=argparse["_parser_install_template"],
-            help=argparse["_parser_install_template"])
-    parser_install_template.set_defaults(function_name=install_kernel,
-                                         kernel_names=None)
-    # Create the parser for the "install-all" subcommand
-    parser_install_all = subparsers.add_parser("install-all",
-            description=argparse["_parser_install_all"],
-            help=argparse["_parser_install_all"])
-    parser_install_all.set_defaults(function_name=install_all)
-    # Create the parser for the "uninstall" subcommand
-    parser_uninstall= subparsers.add_parser("uninstall",
-            description=argparse["_parser_uninstall"],
-            help=argparse["_parser_uninstall"])
-    parser_uninstall.add_argument("kernel_names", action="store", nargs='+',
-                                  metavar="KERNEL_NAME")
-    parser_uninstall.set_defaults(function_name=uninstall_kernel)
-    # Create the parser for the "uninstall-template" subcommand
-    parser_uninstall_template = subparsers.add_parser("uninstall-template",
-            description=argparse["_parser_uninstall_template"],
-            help=argparse["_parser_uninstall_template"])
-    parser_uninstall_template.set_defaults(function_name=uninstall_kernel,
-                                           kernel_names=None)
-    if len(argv) == 1:
-        parser.print_help()
-        exit(0) # Clean exit without any errors/problems
-    return parser.parse_args()
-
-def main():
-    """Main function"""
-
-    create_dictionaries()
-    args = parse_command_line_args()
-    args.function_name(args)

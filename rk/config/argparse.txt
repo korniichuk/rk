@@ -12,5 +12,7 @@ _parser_list
 show list of remote jupyter kernels from kernels dict
 _parser_uninstall
 uninstall remote jupyter kernel/kernels
+_parser_uninstall_all
+uninstall all jupyter kernels from kernels location
 _parser_uninstall_template
 uninstall template of remote kernel
