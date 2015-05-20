@@ -1,5 +1,6 @@
 *~
 *.gz
+*.pyc
 *.tar
 *.tgz
 *.zip
