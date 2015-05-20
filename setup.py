@@ -40,6 +40,6 @@ setup(
     platforms = ["Linux"],
     scripts=['scripts/rkscript'],
     url = "https://github.com/korniichuk/rk",
-    version = "0.1a2",
+    version = "0.2a1",
     zip_safe = True
 )
