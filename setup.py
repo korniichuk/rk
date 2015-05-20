@@ -23,7 +23,7 @@ setup(
         "Topic :: Utilities"
     ],
     description = ("Remote jupyter kernel/kernels administration utility"),
-    download_url = "https://github.com/korniichuk/rk/archive/0.1.zip",
+    download_url = "https://github.com/korniichuk/rk/archive/0.2.zip",
     entry_points = {
         'console_scripts': 'rk = rk.rk:main'
     },
