@@ -253,7 +253,7 @@ def show_kernels_list(args):
     kernels_list.sort()
     # Print kernels list
     for kernel in kernels_list:
-         print("%s (display_name: \"%s\")" % (kernel,
+         print("%s (display name: \"%s\")" % (kernel,
                  kernels_dict[kernel]["display_name"]))
 
 def uninstall_all(args):
