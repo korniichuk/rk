@@ -9,6 +9,18 @@ Install the rk from PyPI
 
     $ sudo pip install rk
 
+Upgrade the rk from PyPI
+------------------------
+::
+
+    $ sudo pip install -U rk
+
+or::
+
+    $ sudo pip install --upgrade rk
+
+.. important:: The rk set to dafault a kernels dict ``kernels.json``. Save a current kernels dict to home dir before upgrade, and replace default kernels dict file after.
+
 Uninstall the rk
 ----------------
 ::
