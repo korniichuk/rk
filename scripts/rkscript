@@ -7,23 +7,24 @@ Make sure that you can login to a remote machine without entering password.
 
 """
 
-from execnet import makegateway 
+from execnet import makegateway
 from getpass import getuser
 from json import load
 from os import getcwd
 from sys import argv
 from zmq.ssh import openssh_tunnel
 
-python_interpreter = argv[1] # Absolute or non absolute path of a Python 
-                             # interpreter
+interpreter = argv[1] # An entry point or an absolute path
+        # to language interpreter on a remote machine
 local_connection_file = argv[2] # Absolute path of a local connection file
-remote_username_at_remote_host = argv[3] # remote_host or
-                                         # remote_username@remote_host
+remote_username_at_remote_host = argv[3] # Just a remote host or,
+        # if your username is different on a remote machine,
+        # use this syntax: remote username AT remote host.
 local_username = getuser()
 if '@' in remote_username_at_remote_host:
     remote_username, remote_host = remote_username_at_remote_host.split('@')
     if local_username != remote_username:
-        # Local username is NOT the same as a remote username 
+        # Local username is NOT the same as a remote username
         remote_connection_file = local_connection_file.replace(local_username,
                                                                remote_username)
     else:
@@ -40,7 +41,7 @@ with open(local_connection_file) as f:
 cwd = getcwd()
 # Launch a kernel process on a remote machine
 gw = makegateway("ssh=%s//python=%s" % (remote_username_at_remote_host,
-                                        python_interpreter))
+                                        interpreter))
 ch = gw.remote_exec("""
     import socket
     from IPython import start_kernel
@@ -48,7 +49,7 @@ ch = gw.remote_exec("""
     from os import chdir, getcwd
     from os.path import exists, expanduser, isdir, join, split
     from struct import pack
-    
+
     remote_connection_file = "%s"
     cfg = %s
     last_cwd = "%s"
@@ -73,7 +74,7 @@ ch = gw.remote_exec("""
         else:
             path = "~/.ipython/profile_default/security"
             default_dir_name = (expanduser(path))
-            if ((default_dir_name != dir_name) and exists(default_dir_name) and 
+            if ((default_dir_name != dir_name) and exists(default_dir_name) and
                     isdir(default_dir_name)):
                 remote_connection_file = join(default_dir_name, file_name)
                 # Write a connection file to default directory
@@ -84,8 +85,8 @@ ch = gw.remote_exec("""
                 remote_connection_file = join(cwd, file_name)
                 # Write a connection file to cwd
                 with open(remote_connection_file, 'w') as f:
-                    f.write(dumps(cfg))                          
-    # SET a current working directory of a process    
+                    f.write(dumps(cfg))
+    # SET a current working directory of a process
     if exists(last_cwd) and isdir(last_cwd):
         chdir(last_cwd)
     start_kernel(["-f", remote_connection_file])
