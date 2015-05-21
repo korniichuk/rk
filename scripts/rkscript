@@ -96,5 +96,5 @@ local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
 remote_ports = ch.receive()
 for k,v in local_ports.items():
     openssh_tunnel(v, remote_ports[k], remote_username_at_remote_host)
-# Wait remote_exec()
-ch.receive()
+# Waits for closing, i.e. remote_exec() finish
+ch.waitclose()
