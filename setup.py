@@ -23,16 +23,17 @@ setup(
         "Topic :: Utilities"
     ],
     description = ("Remote jupyter kernel/kernels administration utility"),
-    download_url = "https://github.com/korniichuk/rk/archive/0.2.zip",
+    download_url = "https://github.com/korniichuk/rk/archive/0.3.zip",
     entry_points = {
         'console_scripts': 'rk = rk.rk:main'
     },
     include_package_data = True,
     install_requires = [
         "configobj",
-        "execnet"
+        "execnet",
+        "paramiko"
     ],
-    keywords = ["ipython", "jupyter", "remote kernel", "python2"],
+    keywords = ["ipython", "jupyter", "remote kernel", "rk", "python2"],
     license = "Public Domain",
     long_description = open(join(dirname(__file__), "README.rst")).read(),
     name = "rk",
@@ -40,6 +41,6 @@ setup(
     platforms = ["Linux"],
     scripts=['scripts/rkscript'],
     url = "https://github.com/korniichuk/rk",
-    version = "0.2a1",
+    version = "0.3a1",
     zip_safe = True
 )

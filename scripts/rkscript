@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """Remote jupyter kernel via SSH
-You will need execnet: codespeak.net/execnet.
 Make sure that you can login to a remote machine without entering password.
 
 """
 
-from execnet import makegateway
 from getpass import getuser
 from json import load
 from os import getcwd
 from sys import argv
-from zmq.ssh import openssh_tunnel
+
+from execnet import makegateway
+
+from rk.ssh import paramiko_tunnel
 
 interpreter = argv[1] # An entry point or an absolute path
         # to language interpreter on a remote machine
@@ -95,6 +96,6 @@ ch = gw.remote_exec("""
 local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
 remote_ports = ch.receive()
 for k,v in local_ports.items():
-    openssh_tunnel(v, remote_ports[k], remote_username_at_remote_host)
+    paramiko_tunnel(v, remote_ports[k], remote_username_at_remote_host)
 # Waits for closing, i.e. remote_exec() finish
 ch.waitclose()
