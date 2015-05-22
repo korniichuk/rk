@@ -239,7 +239,7 @@ Legend
 rk 0.3
 ------
 
-* local port forwarding in the rkcript via paramiko, not via pexpect
+* local port forwarding in the rkscript via paramiko, not via pexpect
 
 rk 0.2
 ------
