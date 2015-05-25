@@ -27,6 +27,20 @@ Uninstall the rk
 
     $ sudo pip uninstall rk
 
+Development installation from GitHub
+====================================
+::
+
+    $ pip install -e git+git://github.com/korniichuk/rk#egg=rk
+
+or::
+
+    $ pip install --editable git+git://github.com/korniichuk/rk#egg=rk    
+
+Where:
+
+* ``-e``, ``--editable`` -- install a project in editable mode (i.e. setuptools "develop mode") [1]_ [2]_.
+
 Quickstart
 ==========
 **First**, make sure that you can login to a remote machine without entering password. The most basic form of the command is::
@@ -46,7 +60,7 @@ Example::
     $ rk install-template
 
 The rk created a template of a remote jupyter kernel inside system kernels location ``/usr/local/share/jupyter/kernels``.
-A kernel identifies itself to jupyter by creating a directory, the name of which is used as an identifier for the kernel [1]_.
+A kernel identifies itself to jupyter by creating a directory, the name of which is used as an identifier for the kernel [3]_.
 
 **Third**, change the ``kernel.json`` file::
 
@@ -126,14 +140,14 @@ The ``kernels.json`` file looks like this::
 
 Where:
 
-* template -- the name of a remote jupyter kernel,
+* ``template`` -- the name of a remote jupyter kernel,
 
-  * display_name -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [1]_,
-  * interpreter -- an entry point or an absolute path to language interpreter on a remote machine,
-  * language -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [1]_,
-  * remote_host -- just a remote host or, if your username is different on a remote machine, use this syntax: remote username AT remote host. 
+  * ``display_name`` -- a kernel’s name as it should be displayed in the UI. Unlike the kernel name used in the API, this can contain arbitrary unicode characters [3]_,
+  * ``interpreter`` -- an entry point or an absolute path to language interpreter on a remote machine,
+  * ``language`` -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [3]_,
+  * ``remote_host`` -- just a remote host or, if your username is different on a remote machine, use this syntax: remote username AT remote host. 
 
-.. note:: For checking absolute path to language interpreter on a remote machine use a ``which`` Unix command [2]_. For example, for the python3 language on a remote machine: ``$ which python3``.
+.. note:: For checking absolute path to language interpreter on a remote machine use a ``which`` Unix command [4]_. For example, for the python3 language on a remote machine: ``$ which python3``.
 
 Change ``kernels.json`` file and add info about your remote jupyter kernels, for example like this::
 
@@ -176,7 +190,7 @@ Install a remote jupyter kernel/kernels
 
 Where:
 
-* KERNEL_NAME -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
+* ``KERNEL_NAME`` -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
 
 Example::
 
@@ -252,5 +266,7 @@ rk 0.2
 
 .. rubric:: Footnotes
 
-.. [1] http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs
-.. [2] http://unixhelp.ed.ac.uk/CGI/man-cgi?which
+.. [1] https://pip.pypa.io/en/latest/reference/pip_install.html#options
+.. [2] https://pip.pypa.io/en/latest/reference/pip_install.html#git
+.. [3] http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs
+.. [4] http://unixhelp.ed.ac.uk/CGI/man-cgi?which
