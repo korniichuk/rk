@@ -253,6 +253,8 @@ Legend
 rk 0.3
 ------
 
+*  **paramiko log file in a local connection file dir.**
+* error in the rkscript: no handlers could be found for logger "paramiko.transport".
 * local port forwarding in the rkscript via paramiko, not via pexpect
 
 rk 0.2

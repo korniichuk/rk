@@ -8,10 +8,12 @@ Make sure that you can login to a remote machine without entering password.
 
 from getpass import getuser
 from json import load
-from os import getcwd
+from os import getcwd, remove
+from os.path import exists, isfile, join, split
 from sys import argv
 
 from execnet import makegateway
+from paramiko.util import log_to_file
 
 from rk.ssh import paramiko_tunnel
 
@@ -21,6 +23,7 @@ local_connection_file = argv[2] # Absolute path of a local connection file
 remote_username_at_remote_host = argv[3] # Just a remote host or,
         # if your username is different on a remote machine,
         # use this syntax: remote username AT remote host.
+
 local_username = getuser()
 if '@' in remote_username_at_remote_host:
     remote_username, remote_host = remote_username_at_remote_host.split('@')
@@ -92,10 +95,20 @@ ch = gw.remote_exec("""
         chdir(last_cwd)
     start_kernel(["-f", remote_connection_file])
                     """ % (remote_connection_file, cfg, cwd))
-# Redirect localhost:local_port to remote_host:remote_port
+# Local and remote ports dicts
 local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
 remote_ports = ch.receive()
+# Create paramiko log file
+dir_name, file_name = split(local_connection_file)
+file_name = file_name.replace("kernel", "paramiko")
+file_name = file_name.replace(".json", ".txt")
+paramiko_log_abs_path = join(dir_name, file_name)
+log_to_file(paramiko_log_abs_path)
+# Redirect localhost:local_port to remote_host:remote_port
 for k,v in local_ports.items():
     paramiko_tunnel(v, remote_ports[k], remote_username_at_remote_host)
 # Waits for closing, i.e. remote_exec() finish
 ch.waitclose()
+# Delete paramiko log file
+if exists(paramiko_log_abs_path) and isfile(paramiko_log_abs_path):
+    remove(paramiko_log_abs_path)
