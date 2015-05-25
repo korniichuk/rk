@@ -35,7 +35,7 @@ Development installation from GitHub
 
 or::
 
-    $ pip install --editable git+git://github.com/korniichuk/rk#egg=rk    
+    $ pip install --editable git+git://github.com/korniichuk/rk#egg=rk
 
 Where:
 
@@ -266,7 +266,7 @@ rk 0.2
 
 .. rubric:: Footnotes
 
-.. [1] https://pip.pypa.io/en/latest/reference/pip_install.html#options
-.. [2] https://pip.pypa.io/en/latest/reference/pip_install.html#git
+.. [1] https://pip.pypa.io/en/latest/reference/pip_install.html#git
+.. [2] https://pip.pypa.io/en/latest/reference/pip_install.html#options
 .. [3] http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs
 .. [4] http://unixhelp.ed.ac.uk/CGI/man-cgi?which
