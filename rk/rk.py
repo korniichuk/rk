@@ -112,7 +112,7 @@ def install_kernel(args):
             remote_host = config["remote_host"]
             kernel_abs_path = join(kernels_location, kernel_name)
             if exists(kernel_abs_path) and isfile(kernel_abs_path):
-                    remove(kernel_abs_path)
+                remove(kernel_abs_path)
             if not exists(kernel_abs_path):
                 # Create directory
                 create_directory(kernel_abs_path)
