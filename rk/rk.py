@@ -111,6 +111,8 @@ def install_kernel(args):
             interpreter = config["interpreter"]
             remote_host = config["remote_host"]
             kernel_abs_path = join(kernels_location, kernel_name)
+            if exists(kernel_abs_path) and isfile(kernel_abs_path):
+                    remove(kernel_abs_path)
             if not exists(kernel_abs_path):
                 # Create directory
                 create_directory(kernel_abs_path)
@@ -153,6 +155,8 @@ def install_kernel(args):
                 interpreter = kernels_dict[kernel_name]["interpreter"]
                 remote_host = kernels_dict[kernel_name]["remote_host"]
                 kernel_abs_path = join(kernels_location, kernel_name)
+                if exists(kernel_abs_path) and isfile(kernel_abs_path):
+                    remove(kernel_abs_path)
                 if not exists(kernel_abs_path):
                     # Create directory
                     create_directory(kernel_abs_path)
