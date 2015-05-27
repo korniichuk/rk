@@ -241,6 +241,26 @@ Uninstall all jupyter kernels from kernels location
 
 .. note:: The default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_ in the rk: ``/usr/local/share/jupyter/kernels``. Change the default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
 
+Log files
+---------
+The default log files location in the rk: ``/tmp/rk/log``. The name of rk log file, for working remote jupyter kernel, look like this: ``albert@192.168.0.1_1879-03-14_11.30.00.txt``. And the log file looks like this::
+
+    date: 1879-03-14 Friday
+    time: 11:30:00
+
+    usernames: albert
+    remote host: 192.168.0.1
+
+    stdin ports: 37654<->58933
+    hb ports: 53538<->59782
+    iopub ports: 45330<->51989
+    shell ports: 36523<->36107
+    control ports: 50090<->53633
+
+    pids: 16965<->20944
+
+.. note:: Change the default log files location: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
+
 History
 =======
 Legend
@@ -253,6 +273,7 @@ Legend
 rk 0.3
 ------
 
+*  **info about working remote jupyter kernel in rk log file**
 *  **paramiko log file in a local connection file dir.**
 * error in the rkscript: no handlers could be found for logger "paramiko.transport".
 * local port forwarding in the rkscript via paramiko, not via pexpect

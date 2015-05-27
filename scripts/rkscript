@@ -6,16 +6,61 @@ Make sure that you can login to a remote machine without entering password.
 
 """
 
+from datetime import datetime
+from errno import ENOTDIR
 from getpass import getuser
 from json import load
-from os import getcwd, remove
-from os.path import exists, isfile, join, split
+from os import chmod, getcwd, getpid, makedirs, remove
+from os.path import dirname, exists, isfile, join, split
+from site import getsitepackages
 from sys import argv
 
+from configobj import ConfigObj
 from execnet import makegateway
 from paramiko.util import log_to_file
 
 from rk.ssh import paramiko_tunnel
+
+def create_directory(directory_name, mode=0o777):
+    """Recursive directory creation function
+    os.chmod work only for last directory
+
+    """
+
+    try:
+        makedirs(directory_name, mode)
+    except OSError as exception: # Python3 NotADirectoryError
+        if exception.errno == ENOTDIR:
+             path = directory_name
+             while path != '/':
+                 if isfile(path):
+                     remove(path)
+                 path = dirname(path)
+             makedirs(directory_name, mode)
+        else:
+            raise exception
+
+def get_date_time():
+    """Get yyyy-mm-dd_hh.mm.ss"""
+
+    def normalize(element):
+        """Add '0' from front"""
+
+        if len(element) == 1:
+            element = '0' + element
+        return element
+
+    now = datetime.now()
+    year = str(now.year)
+    month = normalize(str(now.month))
+    day = normalize(str(now.day))
+    hour = normalize(str(now.hour))
+    minute = normalize(str(now.minute))
+    second = normalize(str(now.second))
+    date = year + '-' + month + '-' + day
+    time = hour + '.' + minute + '.' + second
+    date_time = date + '_' + time
+    return date_time
 
 interpreter = argv[1] # An entry point or an absolute path
         # to language interpreter on a remote machine
@@ -23,6 +68,10 @@ local_connection_file = argv[2] # Absolute path of a local connection file
 remote_username_at_remote_host = argv[3] # Just a remote host or,
         # if your username is different on a remote machine,
         # use this syntax: remote username AT remote host.
+
+module_name = "rk"
+week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+        'Sunday']
 
 local_username = getuser()
 if '@' in remote_username_at_remote_host:
@@ -38,6 +87,8 @@ if '@' in remote_username_at_remote_host:
 else:
     # Local username is the same as a remote username
     remote_connection_file = local_connection_file
+    remote_username = local_username
+    remote_host = remote_username_at_remote_host
 # Load a connection file
 with open(local_connection_file) as f:
     cfg = load(f)
@@ -47,17 +98,19 @@ cwd = getcwd()
 gw = makegateway("ssh=%s//python=%s" % (remote_username_at_remote_host,
                                         interpreter))
 ch = gw.remote_exec("""
-    import socket
-    from IPython import start_kernel
+    import socket    
     from json import dumps
-    from os import chdir, getcwd
+    from os import chdir, getcwd, getpid
     from os.path import exists, expanduser, isdir, join, split
     from struct import pack
+
+    from IPython import start_kernel
 
     remote_connection_file = "%s"
     cfg = %s
     last_cwd = "%s"
     remote_ports = {}
+
     ports = [k for k,v in cfg.items() if k.endswith("_port")]
     # Select random ports
     for port in ports:
@@ -69,6 +122,8 @@ ch = gw.remote_exec("""
         cfg[port] = sock_name
         sock.close()
     channel.send(remote_ports)
+    remote_pid = getpid()
+    channel.send(remote_pid)
     if not exists(remote_connection_file):
         dir_name, file_name = split(remote_connection_file)
         if exists(dir_name) and isdir(dir_name):
@@ -98,17 +153,58 @@ ch = gw.remote_exec("""
 # Local and remote ports dicts
 local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
 remote_ports = ch.receive()
+# Local and remote PIDs
+local_pid = getpid()
+remote_pid = ch.receive()
 # Create paramiko log file
-dir_name, file_name = split(local_connection_file)
-file_name = file_name.replace("kernel", "paramiko")
-file_name = file_name.replace(".json", ".txt")
-paramiko_log_abs_path = join(dir_name, file_name)
+paramiko_log_location, paramiko_log_file_name = split(local_connection_file)
+paramiko_log_file_name = paramiko_log_file_name.replace("kernel", "paramiko")
+paramiko_log_file_name = paramiko_log_file_name.replace(".json", ".txt")
+paramiko_log_abs_path = join(paramiko_log_location, paramiko_log_file_name)
 log_to_file(paramiko_log_abs_path)
 # Redirect localhost:local_port to remote_host:remote_port
 for k,v in local_ports.items():
     paramiko_tunnel(v, remote_ports[k], remote_username_at_remote_host)
+# Create rk log file
+date_time = get_date_time()
+date, time = date_time.replace('.', ':').split('_')
+date = date + ' ' + week[datetime.weekday(datetime.now())]
+rk_log_file_name = "%s@%s_%s.txt" % (local_username, remote_host, date_time)
+module_location = join(getsitepackages()[0], module_name)
+config_rk_abs_path = join(module_location, "config/rk.ini")
+config = ConfigObj(config_rk_abs_path)
+rk_log_location = config["rk_log_location"]
+rk_log_abs_path = join(rk_log_location, rk_log_file_name)
+if exists(rk_log_location) and isfile(rk_log_location):
+    remove(rk_log_location)
+if not exists(rk_log_location):
+    create_directory(rk_log_location, 0o777)
+    path = rk_log_location
+    while path != '/':
+        try:
+            chmod(path, 0o777)
+        except OSError:
+            break
+        path = dirname(path)
+with open(rk_log_abs_path, 'w') as f:
+    f.write("date: %s\n" % date)
+    f.write("time: %s\n" % time)
+    f.write("\n")
+    if local_username == remote_username:
+        f.write("usernames: %s\n" % local_username)
+    else:
+        f.write("usernames: %s<->%s\n" % (local_username, remote_username))
+    f.write("remote host: %s\n" % remote_host)
+    f.write("\n")
+    for k,v in local_ports.items():
+        f.write("%ss: %s<->%s\n" % (k.replace('_', ' '), v, remote_ports[k]))
+    f.write("\n")
+    f.write("pids: %s<->%s\n" % (local_pid, remote_pid))
 # Waits for closing, i.e. remote_exec() finish
 ch.waitclose()
 # Delete paramiko log file
 if exists(paramiko_log_abs_path) and isfile(paramiko_log_abs_path):
     remove(paramiko_log_abs_path)
+# Delete rk log file
+if exists(rk_log_abs_path) and isfile(rk_log_abs_path):
+    remove(rk_log_abs_path)
