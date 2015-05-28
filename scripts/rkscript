@@ -100,8 +100,8 @@ gw = makegateway("ssh=%s//python=%s" % (remote_username_at_remote_host,
 ch = gw.remote_exec("""
     import socket    
     from json import dumps
-    from os import chdir, getcwd, getpid
-    from os.path import exists, expanduser, isdir, join, split
+    from os import chdir, getcwd, getpid, remove
+    from os.path import exists, expanduser, isdir, isfile, join, split
     from struct import pack
 
     from IPython import start_kernel
@@ -149,6 +149,9 @@ ch = gw.remote_exec("""
     if exists(last_cwd) and isdir(last_cwd):
         chdir(last_cwd)
     start_kernel(["-f", remote_connection_file])
+    # Delete a connection file
+    if exists(remote_connection_file) and isfile(remote_connection_file):
+        remove(remote_connection_file)
                     """ % (remote_connection_file, cfg, cwd))
 # Local and remote ports dicts
 local_ports = {k: v for k,v in cfg.items() if k.endswith("_port")}
