@@ -2,6 +2,8 @@ _delete
 KERNEL_NAME '%s' already exists. Delete files and continue? [y/n]
 _delete_template
 Template of remote kernel already exists. Delete files and continue? [y/n]
+_eror_ArgumentsNumber
+Error: rkscript takes exactly %s arguments (%s given)
 _error_NoKernel
 Error: KERNEL_NAME '%s' not found.
 _error_NoKernels

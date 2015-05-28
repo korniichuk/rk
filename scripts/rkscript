@@ -21,6 +21,17 @@ from paramiko.util import log_to_file
 
 from rk.ssh import paramiko_tunnel
 
+arguments_number = 3 # interpreter, local_connection_file,
+                     # remote_username_at_remote_host
+messages = {} # Strings for output
+week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+        'Sunday']
+
+module_name = "rk"
+module_location = join(getsitepackages()[0], module_name)
+config_rk_abs_path = join(module_location, "config/rk.ini")
+config = ConfigObj(config_rk_abs_path)
+
 def create_directory(directory_name, mode=0o777):
     """Recursive directory creation function
     os.chmod work only for last directory
@@ -62,17 +73,28 @@ def get_date_time():
     date_time = date + '_' + time
     return date_time
 
-interpreter = argv[1] # An entry point or an absolute path
-        # to language interpreter on a remote machine
-local_connection_file = argv[2] # Absolute path of a local connection file
-remote_username_at_remote_host = argv[3] # Just a remote host or,
-        # if your username is different on a remote machine,
-        # use this syntax: remote username AT remote host.
+def create_messages():
+    """Create "messages" dictionary"""
 
-module_name = "rk"
-week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
-        'Sunday']
+    config_messages_rel_path = config["config_messages_rel_path"]
+    config_messages_abs_path = join(module_location, config_messages_rel_path)
+    with open(config_messages_abs_path, 'r') as f:
+        messages_list = f.read().splitlines()
+    for i in range(0, len(messages_list), 2):
+        messages[messages_list[i]] = messages_list[i+1]
 
+create_messages()
+argv_len = len(argv) - 1 # argv[0]: is the script name
+if argv_len == arguments_number:
+    interpreter = argv[1] # An entry point or an absolute path
+            # to language interpreter on a remote machine
+    local_connection_file = argv[2] # Absolute path of a local connection file
+    remote_username_at_remote_host = argv[3] # Just a remote host or,
+            # if your username is different on a remote machine,
+            # use this syntax: remote username AT remote host.
+else:
+    print(messages["_eror_ArgumentsNumber"] % (arguments_number, argv_len))
+    exit(1)
 local_username = getuser()
 if '@' in remote_username_at_remote_host:
     remote_username, remote_host = remote_username_at_remote_host.split('@')
@@ -173,9 +195,6 @@ date_time = get_date_time()
 date, time = date_time.replace('.', ':').split('_')
 date = date + ' ' + week[datetime.weekday(datetime.now())]
 rk_log_file_name = "%s@%s_%s.txt" % (local_username, remote_host, date_time)
-module_location = join(getsitepackages()[0], module_name)
-config_rk_abs_path = join(module_location, "config/rk.ini")
-config = ConfigObj(config_rk_abs_path)
 rk_log_location = config["rk_log_location"]
 rk_log_abs_path = join(rk_log_location, rk_log_file_name)
 if exists(rk_log_location) and isfile(rk_log_location):
