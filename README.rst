@@ -243,12 +243,12 @@ Uninstall all jupyter kernels from kernels location
 
 Log files
 ---------
-The default log files location in the rk: ``/tmp/rk/log``. The name of rk log file, for working remote jupyter kernel, look like this: ``albert@192.168.0.1_1879-03-14_11.30.00.txt``. And the log file looks like this::
+The default log files location in the rk: ``/tmp/rk/log``. The name of rk log file, for working remote jupyter kernel, look like this: ``bree@192.168.0.1_1879-03-14_11.30.00.txt``. And the log file looks like this::
 
     date: 1879-03-14 Friday
     time: 11:30:00
 
-    usernames: albert
+    usernames: bree<->albert
     remote host: 192.168.0.1
 
     stdin ports: 37654<->58933
@@ -260,6 +260,8 @@ The default log files location in the rk: ``/tmp/rk/log``. The name of rk log fi
     pids: 16965<->20944
 
 .. note:: Change the default log files location: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
+
+The paramiko log file is available in a local connection file directory. The name of paramiko log file, for working remote jupyter kernel, look like this: ``paramiko-843664c7-798d-4a9e-979c-22d0dc4a6bd5.txt``.
 
 History
 =======
