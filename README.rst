@@ -275,7 +275,7 @@ Legend
 rk 0.3
 ------
 
-* error in the rkscript: list index out of range
+* error in the rkscript: list index out of range.
 * **info about working remote jupyter kernel in rk log file.**
 * **paramiko log file in a local connection file dir.**
 * error in the rkscript: no handlers could be found for logger "paramiko.transport".
