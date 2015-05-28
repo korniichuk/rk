@@ -12,13 +12,14 @@ from configobj import ConfigObj
 
 module_location = dirname(__file__)
 config_rk_abs_path = join(module_location, "config/rk.ini")
+config = ConfigObj(config_rk_abs_path)
+
 argparse = {} # Strings for -h --help
 messages = {} # Strings for output
 
 def create_dictionaries():
     """Create "argparse" and "messages" dictionaries"""
 
-    config = ConfigObj(config_rk_abs_path)
     config_argparse_rel_path = config["config_argparse_rel_path"]
     config_argparse_abs_path = join(module_location, config_argparse_rel_path)
     config_messages_rel_path = config["config_messages_rel_path"]
@@ -35,7 +36,6 @@ def create_dictionaries():
 def install_all(args):
     """Install all remote jupyter kernels from kernels dict"""
 
-    config = ConfigObj(config_rk_abs_path)
     config_kernels_rel_path = config["config_kernels_rel_path"]
     config_kernels_abs_path = join(module_location, config_kernels_rel_path)
     # Load kernels.json file
@@ -96,7 +96,6 @@ def install_kernel(args):
             f.write(dumps(kernel_dict, indent=1, sort_keys=True))
 
     if getuid() == 0:
-        config = ConfigObj(config_rk_abs_path)
         kernels_location = config["kernels_location"]
         img_location = config["img_location"]
         logo_name_srt = config["logo_name_srt"]
@@ -248,7 +247,6 @@ def parse_command_line_args():
 def show_kernels_list(args):
     """Show list of remote jupyter kernels from kernels dict"""
 
-    config = ConfigObj(config_rk_abs_path)
     config_kernels_rel_path = config["config_kernels_rel_path"]
     config_kernels_abs_path = join(module_location, config_kernels_rel_path)
     # Load kernels.json file
@@ -267,7 +265,6 @@ def uninstall_all(args):
     """Uninstall all jupyter kernels from kernels location"""
 
     if getuid() == 0:
-        config = ConfigObj(config_rk_abs_path)
         kernels_location = config["kernels_location"]
         kernel_names = []
         for element in listdir(kernels_location):
@@ -291,7 +288,6 @@ def uninstall_kernel(args):
     """Uninstall remote jupyter kernel/kernels"""
 
     if getuid() == 0:
-        config = ConfigObj(config_rk_abs_path)
         kernels_location = config["kernels_location"]
         kernel_names = args.kernel_names
         if kernel_names == None:
