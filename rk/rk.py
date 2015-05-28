@@ -63,11 +63,14 @@ def install_kernel(args):
             if exists(logo_abs_path) and isfile(logo_abs_path):
                 link(logo_abs_path, join(destination, logo_name))
 
-    def create_directory(directory_name):
-        """Create directory"""
+    def create_directory(directory_name, mode=0o777):
+        """Recursive directory creation function
+        os.chmod work only for last directory
+
+        """
 
         try:
-            makedirs(directory_name, mode=0o755)
+            makedirs(directory_name, mode)
         except OSError as exception: # Python3 NotADirectoryError
             if exception.errno == ENOTDIR:
                  path = directory_name
@@ -75,7 +78,7 @@ def install_kernel(args):
                      if isfile(path):
                          remove(path)
                      path = dirname(path)
-                 makedirs(directory_name, mode=0o755)
+                 makedirs(directory_name, mode)
             else:
                 raise exception
 
@@ -115,7 +118,7 @@ def install_kernel(args):
                 remove(kernel_abs_path)
             if not exists(kernel_abs_path):
                 # Create directory
-                create_directory(kernel_abs_path)
+                create_directory(kernel_abs_path, 0o755)
                 # Copy logos
                 copy_logos(img_location, logo_name_srt, kernel_abs_path)
                 # Create kernel.json
@@ -159,7 +162,7 @@ def install_kernel(args):
                     remove(kernel_abs_path)
                 if not exists(kernel_abs_path):
                     # Create directory
-                    create_directory(kernel_abs_path)
+                    create_directory(kernel_abs_path, 0o755)
                     # Copy logos
                     copy_logos(img_location, logo_name_srt, kernel_abs_path)
                     # Create kernel.json
