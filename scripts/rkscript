@@ -126,7 +126,10 @@ ch = gw.remote_exec("""
     from os.path import exists, expanduser, isdir, isfile, join, split
     from struct import pack
 
-    from IPython import start_kernel
+    try:
+        from ipykernel.kernelapp import launch_new_instance
+    except ImportError:
+        from IPython.kernel.zmq.kernelapp import launch_new_instance
 
     remote_connection_file = "%s"
     cfg = %s
@@ -170,7 +173,7 @@ ch = gw.remote_exec("""
     # SET a current working directory of a process
     if exists(last_cwd) and isdir(last_cwd):
         chdir(last_cwd)
-    start_kernel(["-f", remote_connection_file])
+    launch_new_instance(["-f", remote_connection_file])
     # Delete a connection file
     if exists(remote_connection_file) and isfile(remote_connection_file):
         remove(remote_connection_file)
