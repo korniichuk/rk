@@ -2,10 +2,12 @@
 
 from argparse import ArgumentParser
 from errno import ENOTDIR
+from getpass import getuser
 from json import dumps, load
 from os import getuid, link, listdir, makedirs, remove
-from os.path import dirname, exists, isdir, isfile, join
+from os.path import dirname, exists, expanduser, isdir, isfile, join
 from shutil import rmtree
+from subprocess import call
 from sys import argv, exit
 
 from configobj import ConfigObj
@@ -239,10 +241,64 @@ def parse_command_line_args():
             description=argparse["_parser_uninstall_all"],
             help=argparse["_parser_uninstall_all"])
     parser_uninstall_all.set_defaults(function_name=uninstall_all)
+    # Create the parser for the "ssh" subcommand
+    parser_list = subparsers.add_parser("ssh",
+            description=argparse["_parser_ssh"],
+            help=argparse["_parser_ssh"])
+    parser_list.set_defaults(function_name=setup_ssh_auto_login)
     if len(argv) == 1:
         parser.print_help()
         exit(0) # Clean exit without any errors/problems
     return parser.parse_args()
+
+def setup_ssh_auto_login(args):
+    """Setup SSH for auto login without a password"""
+
+    keys_location = "~/.ssh"
+    pri_key_paths = ["~/.ssh/id_dsa", "~/.ssh/id_ecdsa", "~/.ssh/id_ed25519",
+                     "~/.ssh/id_rsa"]
+
+    # Check current keys
+    total_keys_flag = False
+    pri_key_flag = False
+    pub_key_flag = False
+    for pri_key_path in pri_key_paths:
+        pri_key_abs_path = expanduser(pri_key_path)
+        if exists(pri_key_abs_path) and isfile(pri_key_abs_path):
+            pri_key_flag = True
+        pub_key_abs_path = pri_key_abs_path + ".pub"
+        if exists(pub_key_abs_path) and isfile(pub_key_abs_path):
+            pub_key_flag = True
+        if (pri_key_flag == True) and (pub_key_flag == True):
+            total_keys_flag = True
+            break
+        else:
+            pri_key_flag = False
+            pub_key_flag = False
+    if total_keys_flag == False:
+        # Check keys dir
+        keys_dir = expanduser(keys_location)
+        if not exists(keys_dir):
+            # Create keys dir
+            makedirs(keys_dir)
+        # Create a public and a private keys using the ssh-keygen command
+        call("ssh-keygen -t ecdsa -b 521 -N '' -f ~/.ssh/id_ecdsa",
+             shell=True)
+    # Ask about a remote machine
+    print(messages["_ask_remote_host"])
+    remote_username_at_remote_host = raw_input()
+    if '@' in remote_username_at_remote_host:
+        l_username = getuser()
+        r_username, r_host = remote_username_at_remote_host.split('@')
+        if l_username == r_username:
+            # Local username is the same as a remote username
+            remote_username_at_remote_host = r_host
+    # Copy a public key to a remote machine using the ssh-copy-id command
+    call("ssh-copy-id %s" % remote_username_at_remote_host, shell=True)
+    # Ensure ssh-agent is enabled
+    call("eval \"$(ssh-agent -s)\"", shell=True)
+    # Adds private key identities to the authentication agent
+    call("ssh-add ~/.ssh/id_ecdsa", shell=True)
 
 def show_kernels_list(args):
     """Show list of remote jupyter kernels from kernels dict"""

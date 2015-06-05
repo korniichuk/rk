@@ -55,6 +55,8 @@ Example::
 
     $ ssh albert@192.168.0.1
 
+.. note:: You can `setup SSH for auto login without a password`_ like this: ``$ rk ssh``.
+
 **Second**, install a template of a remote jupyter kernel::
 
     $ rk install-template
@@ -147,7 +149,7 @@ Where:
   * ``language`` -- a name of the language of a kernel. When loading notebooks, if no matching kernelspec key (may differ across machines) is found, a kernel with a matching language will be used. This allows a notebook written on any python or julia kernel to be properly associated with the user's python or julia kernel, even if they aren’t listed under the same name as the author’s [1]_,
   * ``remote_host`` -- just a remote host or, if your username is different on a remote machine, use this syntax: remote username AT remote host. 
 
-.. note:: For checking absolute path to language interpreter on a remote machine use a ``which`` Unix command [2]_. For example, for the python3 language on a remote machine: ``$ which python3``.
+.. note:: For checking absolute path to language interpreter on a remote machine use a `which <http://unixhelp.ed.ac.uk/CGI/man-cgi?which>`_ Unix command. For example, for the python3 language on a remote machine: ``$ which python3``.
 
 Change ``kernels.json`` file and add info about your remote jupyter kernels, for example like this::
 
@@ -241,6 +243,21 @@ Uninstall all jupyter kernels from kernels location
 
 .. note:: The default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_ in the rk: ``/usr/local/share/jupyter/kernels``. Change the default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
 
+Setup SSH for auto login without a password
+-------------------------------------------
+::
+
+    $ rk ssh
+
+If you are familiar with `ssh-keygen <http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-keygen&sektion=1>`_, `ssh-copy-id <http://linux.die.net/man/1/ssh-copy-id>`_ and `ssh-add <http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-add&sektion=1>`_, this code also setup SSH for auto login without a password [2]_::
+
+    $ ssh-keygen -t ecdsa -b 521 -N '' -f ~/.ssh/id_ecdsa
+    $ ssh-copy-id REMOTE_HOST
+    $ eval "$(ssh-agent -s)"
+    $ ssh-add ~/.ssh/id_ecdsa"
+
+.. note:: If your username is different on a remote machine, you can specify it by using this syntax: ``$ ssh-copy-id REMOTE_USERNAME@REMOTE_HOST``.
+
 Log files
 ---------
 The default log files location in the rk: ``/tmp/rk/log``. The name of rk log file, for working remote jupyter kernel, look like this: ``bree@192.168.0.1_1879-03-14_11.30.00.txt``. And the log file looks like this::
@@ -274,7 +291,7 @@ Legend
 
 rk 0.3
 ------
-
+* **setup SSH for auto login without a password with a "ssh" subcommand.**
 * error in the rkscript: list index out of range.
 * **info about working remote jupyter kernel in rk log file.**
 * **paramiko log file in a local connection file dir.**
@@ -293,4 +310,4 @@ rk 0.2
 .. rubric:: Footnotes
 
 .. [1] http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs
-.. [2] http://unixhelp.ed.ac.uk/CGI/man-cgi?which
+.. [2] https://help.github.com/articles/generating-ssh-keys/

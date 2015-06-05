@@ -10,6 +10,8 @@ _parser_install_template
 install template of remote kernel
 _parser_list
 show list of remote jupyter kernels from kernels dict
+_parser_ssh
+setup SSH for auto login without a password
 _parser_uninstall
 uninstall remote jupyter kernel/kernels
 _parser_uninstall_all

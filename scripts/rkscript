@@ -93,7 +93,7 @@ if argv_len == arguments_number:
             # if your username is different on a remote machine,
             # use this syntax: remote username AT remote host.
 else:
-    print(messages["_eror_ArgumentsNumber"] % (arguments_number, argv_len))
+    print(messages["_error_ArgumentsNumber"] % (arguments_number, argv_len))
     exit(1)
 local_username = getuser()
 if '@' in remote_username_at_remote_host:
