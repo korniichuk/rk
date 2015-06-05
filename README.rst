@@ -254,7 +254,7 @@ If you are familiar with `ssh-keygen <http://www.openbsd.org/cgi-bin/man.cgi?que
     $ ssh-keygen -t ecdsa -b 521 -N '' -f ~/.ssh/id_ecdsa
     $ ssh-copy-id REMOTE_HOST
     $ eval "$(ssh-agent -s)"
-    $ ssh-add ~/.ssh/id_ecdsa"
+    $ ssh-add ~/.ssh/id_ecdsa
 
 .. note:: If your username is different on a remote machine, you can specify it by using this syntax: ``$ ssh-copy-id REMOTE_USERNAME@REMOTE_HOST``.
 
