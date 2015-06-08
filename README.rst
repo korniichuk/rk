@@ -87,6 +87,10 @@ For a python2 remote jupyter kernel just change ``remote_username@remote_host``.
 
     $ ipython notebook
 
+or::
+
+    $ jupyter notebook
+
 Choose: ``Files -> New -> Template``.
 
 User guide
