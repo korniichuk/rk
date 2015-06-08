@@ -282,8 +282,7 @@ def setup_ssh_auto_login(args):
             # Create keys dir
             makedirs(keys_dir)
         # Create a public and a private keys using the ssh-keygen command
-        call("ssh-keygen -t ecdsa -b 521 -N '' -f ~/.ssh/id_ecdsa",
-             shell=True)
+        call("ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/id_rsa", shell=True)
     # Ask about a remote machine
     print(messages["_ask_remote_host"])
     remote_username_at_remote_host = raw_input()
@@ -298,7 +297,7 @@ def setup_ssh_auto_login(args):
     # Ensure ssh-agent is enabled
     call("eval \"$(ssh-agent -s)\"", shell=True)
     # Adds private key identities to the authentication agent
-    call("ssh-add ~/.ssh/id_ecdsa", shell=True)
+    call("ssh-add ~/.ssh/id_rsa", shell=True)
 
 def show_kernels_list(args):
     """Show list of remote jupyter kernels from kernels dict"""

@@ -251,10 +251,10 @@ Setup SSH for auto login without a password
 
 If you are familiar with `ssh-keygen <http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-keygen&sektion=1>`_, `ssh-copy-id <http://linux.die.net/man/1/ssh-copy-id>`_ and `ssh-add <http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-add&sektion=1>`_, this code also setup SSH for auto login without a password [2]_::
 
-    $ ssh-keygen -t ecdsa -b 521 -N '' -f ~/.ssh/id_ecdsa
+    $ ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/id_rsa
     $ ssh-copy-id REMOTE_HOST
     $ eval "$(ssh-agent -s)"
-    $ ssh-add ~/.ssh/id_ecdsa
+    $ ssh-add ~/.ssh/id_rsa
 
 .. note:: If your username is different on a remote machine, you can specify it by using this syntax: ``$ ssh-copy-id REMOTE_USERNAME@REMOTE_HOST``.
 
