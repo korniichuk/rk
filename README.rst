@@ -43,6 +43,12 @@ Development installation
 
 Quickstart
 ==========
+
+.. image:: ./img/quickstart_0001_550px.png
+  :alt: quickstart [youtube video]
+  :align: center
+  :target: https://www.youtube.com/watch?v=joEIPZJUB94
+
 **First**, make sure that you can login to a remote machine without entering password. The most basic form of the command is::
 
     $ ssh REMOTE_HOST

@@ -1,2 +1,3 @@
 include LICENSE.txt README.rst
+recursive-include img *.png
 recursive-include rk *.ini *.json *.png *.py *.txt 
