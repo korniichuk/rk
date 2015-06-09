@@ -185,7 +185,7 @@ Where:
   * ``python2``, ``python3`` -- entry points on a remote machine,
   * ``python`` -- the name of the language of a remote jupyter kernel,
   * ``albert`` -- the remote username on a remote machine, not similar with a username on a local machine,
-  * ``92.168.0.1`` -- the remote host.
+  * ``192.168.0.1`` -- the remote host.
 
 Show list of remote jupyter kernels from kernels dict
 -----------------------------------------------------
