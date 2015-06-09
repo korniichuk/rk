@@ -90,11 +90,11 @@ For a python2 remote jupyter kernel just change ``remote_username@remote_host``.
 
 **Fourth**, launch jupyter notebook and check your new remote juputer kernel::
 
-    $ ipython notebook
+    $ jupyter notebook
 
 or::
 
-    $ jupyter notebook
+    $ ipython notebook
 
 Choose: ``Files -> New -> Template``.
 
