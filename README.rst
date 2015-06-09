@@ -25,7 +25,7 @@ or::
 
     $ sudo pip install --upgrade rk
 
-.. important:: The rk set to dafault a kernels dict ``kernels.json``. Save a current kernels dict to home dir before upgrade, and replace default kernels dict file after.
+.. important:: The rk set to dafault the `kernels dict`_ ``kernels.json``. Save the current `kernels dict`_ to home dir before upgrade, and replace default `kernels dict`_ file after.
 
 Uninstall the rk
 ----------------
@@ -206,7 +206,7 @@ Install a remote jupyter kernel/kernels
 
 Where:
 
-* ``KERNEL_NAME`` -- a name of a remote jupyter kernel in the kernels dict ``kernels.json``.
+* ``KERNEL_NAME`` -- a name of a remote jupyter kernel in the `kernels dict`_ ``kernels.json``.
 
 Example::
 
