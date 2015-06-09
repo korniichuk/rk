@@ -46,7 +46,7 @@ Quickstart
 
 .. image:: ./img/quickstart_0001_728px.png
   :alt: quickstart [youtube video]
-  :target: https://www.youtube.com/watch?v=joEIPZJUB94
+  :target: https://youtu.be/joEIPZJUB94
 
 **First**, make sure that you can login to a remote machine without entering password. The most basic form of the command is::
 
@@ -134,6 +134,11 @@ or::
 
 Kernels dict
 ------------
+
+.. image:: ./img/user_guide-_kernels_dict_0001_728px.png
+  :alt: user guide: kernels dict [youtube video]
+  :target: https://youtu.be/czh3K4xjVD4
+
 Open ``kernels.json`` file::
 
     $ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/kernels.json
