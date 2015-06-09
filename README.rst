@@ -44,7 +44,7 @@ Development installation
 Quickstart
 ==========
 
-.. image:: ./img/quickstart_0001_550px.png
+.. image:: ./img/quickstart_0001_728px.png
   :alt: quickstart [youtube video]
   :target: https://www.youtube.com/watch?v=joEIPZJUB94
 
