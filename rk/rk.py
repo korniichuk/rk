@@ -4,9 +4,9 @@ from argparse import ArgumentParser
 from errno import EACCES, ENOTDIR
 from getpass import getuser
 from json import dumps, load
-from os import getuid, link, listdir, makedirs, remove, strerror
+from os import link, listdir, makedirs, remove, strerror
 from os.path import dirname, exists, expanduser, isdir, isfile, join
-from shutil import rmtree
+from shutil import copyfile, rmtree
 from subprocess import call
 from sys import argv, exit
 
@@ -41,7 +41,7 @@ def install_all(args):
     config_kernels_rel_path = config["config_kernels_rel_path"]
     config_kernels_abs_path = join(module_location, config_kernels_rel_path)
     # Load kernels.json file
-    with open(config_kernels_abs_path) as f:
+    with open(config_kernels_abs_path, 'r') as f:
         kernels_dict = load(f)
     # Create kernels list from kernels dict
     kernels_list = [k for k in kernels_dict.keys()]
@@ -63,7 +63,20 @@ def install_kernel(args):
             logo_abs_path = logo_abs_path_str.format(size)
             logo_name = logo_name_srt.format(size)
             if exists(logo_abs_path) and isfile(logo_abs_path):
-                link(logo_abs_path, join(destination, logo_name))
+                try:
+                    link(logo_abs_path, join(destination, logo_name))
+                except Exception:
+                    try:
+                        copyfile(logo_abs_path, join(destination, logo_name))
+                    except Exception as exception: # Python3 PermissionError
+                        error_code = exception.errno
+                        if error_code == EACCES: # 13
+                            print(messages["_error_NoRoot"])
+                            exit(1)
+                        else:
+                            print(messages["_error_Oops"] %
+                                    strerror(error_code))
+                            exit(1)
 
     def create_directory(directory_name, mode=0o777):
         """Recursive directory creation function
@@ -73,16 +86,41 @@ def install_kernel(args):
 
         try:
             makedirs(directory_name, mode)
-        except OSError as exception: # Python3 NotADirectoryError
-            if exception.errno == ENOTDIR:
-                 path = directory_name
-                 while path != '/':
-                     if isfile(path):
-                         remove(path)
-                     path = dirname(path)
-                 makedirs(directory_name, mode)
+        except Exception as exception:
+            error_code = exception.errno
+            if error_code == EACCES: # 13 (Python3 PermissionError)
+                print(messages["_error_NoRoot"])
+                exit(1)
+            elif error_code == ENOTDIR: # 20 (Python3 NotADirectoryError)
+                path = directory_name
+                while path != '/':
+                    if isfile(path):
+                        try:
+                            remove(path)
+                        except Exception as exception: # Python3
+                                                       # PermissionError
+                            error_code = exception.errno
+                            if error_code == EACCES: # 13
+                                print(messages["_error_NoRoot"])
+                                exit(1)
+                            else:
+                                print(messages["_error_Oops"] %
+                                        strerror(error_code))
+                                exit(1)
+                    path = dirname(path)
+                try:
+                    makedirs(directory_name, mode)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
             else:
-                raise exception
+                print(messages["_error_Oops"] % strerror(error_code))
+                exit(1)
 
     def create_kernel_json_file(display_name, language, script, interpreter,
                                 connection_file, remote_host, destination):
@@ -94,29 +132,101 @@ def install_kernel(args):
         kernel_dict["argv"].append(interpreter)
         kernel_dict["argv"].append(connection_file)
         kernel_dict["argv"].append(remote_host)
-        with open(join(destination, "kernel.json"), 'w') as f:
-            f.write(dumps(kernel_dict, indent=1, sort_keys=True))
+        try:
+            with open(join(destination, "kernel.json"), 'w') as f:
+                f.write(dumps(kernel_dict, indent=1, sort_keys=True))
+        except Exception as exception: # Python3 PermissionError
+            error_code = exception.errno
+            if error_code == EACCES: # 13
+                print(messages["_error_NoRoot"])
+                exit(1)
+            else:
+                print(messages["_error_Oops"] % strerror(error_code))
+                exit(1)
 
-    if getuid() == 0:
-        kernels_location = config["kernels_location"]
-        img_location = config["img_location"]
-        logo_name_srt = config["logo_name_srt"]
-        script = config["script"]
-        connection_file = config["connection_file"]
-        config_kernels_rel_path = config["config_kernels_rel_path"]
-        config_kernels_abs_path = join(module_location,
-                                       config_kernels_rel_path)
-        kernel_names = args.kernel_names
-        if kernel_names == None:
-            # Install template of remote kernel
-            kernel_name = config["kernel_name"]
-            display_name = config["display_name"]
-            language = config["language"]
-            interpreter = config["interpreter"]
-            remote_host = config["remote_host"]
+    kernels_location = config["kernels_location"]
+    if '~' in kernels_location:
+        kernels_location = expanduser(kernels_location)
+    img_location = config["img_location"]
+    logo_name_srt = config["logo_name_srt"]
+    script = config["script"]
+    connection_file = config["connection_file"]
+    config_kernels_rel_path = config["config_kernels_rel_path"]
+    config_kernels_abs_path = join(module_location,
+                                   config_kernels_rel_path)
+    kernel_names = args.kernel_names
+    if kernel_names == None:
+        # Install template of remote kernel
+        kernel_name = config["kernel_name"]
+        display_name = config["display_name"]
+        language = config["language"]
+        interpreter = config["interpreter"]
+        remote_host = config["remote_host"]
+        kernel_abs_path = join(kernels_location, kernel_name)
+        if exists(kernel_abs_path) and isfile(kernel_abs_path):
+            try:
+                remove(kernel_abs_path)
+            except Exception as exception: # Python3 PermissionError
+                error_code = exception.errno
+                if error_code == EACCES: # 13
+                    print(messages["_error_NoRoot"])
+                    exit(1)
+                else:
+                    print(messages["_error_Oops"] % strerror(error_code))
+                    exit(1)
+        if not exists(kernel_abs_path):
+            # Create directory
+            create_directory(kernel_abs_path, 0o755)
+            # Copy logos
+            copy_logos(img_location, logo_name_srt, kernel_abs_path)
+            # Create kernel.json
+            create_kernel_json_file(display_name, language, script,
+                                    interpreter, connection_file,
+                                    remote_host, kernel_abs_path)
+            print(messages["_installed_template"])
+        else:
+            print(messages["_delete_template"])
+            answer = raw_input()
+            answer_lower = answer.lower()
+            if ((answer_lower == 'y') or (answer_lower == 'yes') or
+                    (answer_lower == 'yep')):
+                uninstall_kernel(args)
+                install_kernel(args)
+    else:
+        # Install kernel/kernels
+        # Load kernels.json file
+        with open(config_kernels_abs_path, 'r') as f:
+            kernels_dict = load(f)
+        # Check kernel_names list/
+        no_kernel_names = []
+        for kernel_name in kernel_names:
+            if kernel_name not in kernels_dict:
+                no_kernel_names.append(kernel_name)
+        if len(no_kernel_names) != 0:
+            if len(no_kernel_names) == 1:
+                print(messages["_error_NoKernel"] % no_kernel_names[0])
+            else:
+                print(messages["_error_NoKernels"] %
+                        '\' \''.join(no_kernel_names))
+            exit(1)
+        # /Check kernel_names list
+        for kernel_name in kernel_names:
+            display_name = kernels_dict[kernel_name]["display_name"]
+            language = kernels_dict[kernel_name]["language"]
+            interpreter = kernels_dict[kernel_name]["interpreter"]
+            remote_host = kernels_dict[kernel_name]["remote_host"]
             kernel_abs_path = join(kernels_location, kernel_name)
             if exists(kernel_abs_path) and isfile(kernel_abs_path):
-                remove(kernel_abs_path)
+                try:
+                    remove(kernel_abs_path)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
             if not exists(kernel_abs_path):
                 # Create directory
                 create_directory(kernel_abs_path, 0o755)
@@ -126,63 +236,16 @@ def install_kernel(args):
                 create_kernel_json_file(display_name, language, script,
                                         interpreter, connection_file,
                                         remote_host, kernel_abs_path)
-                print(messages["_installed_template"])
+                print(messages["_installed"] % kernel_name)
             else:
-                print(messages["_delete_template"])
+                print(messages["_delete"] % kernel_name)
                 answer = raw_input()
                 answer_lower = answer.lower()
                 if ((answer_lower == 'y') or (answer_lower == 'yes') or
                         (answer_lower == 'yep')):
+                    args.kernel_names = [kernel_name]
                     uninstall_kernel(args)
                     install_kernel(args)
-        else:
-            # Install kernel/kernels
-            # Load kernels.json file
-            with open(config_kernels_abs_path) as f:
-                kernels_dict = load(f)
-            # Check kernel_names list/
-            no_kernel_names = []
-            for kernel_name in kernel_names:
-                if kernel_name not in kernels_dict:
-                    no_kernel_names.append(kernel_name)
-            if len(no_kernel_names) != 0:
-                if len(no_kernel_names) == 1:
-                    print(messages["_error_NoKernel"] % no_kernel_names[0])
-                else:
-                    print(messages["_error_NoKernels"] %
-                            '\' \''.join(no_kernel_names))
-                exit(1)
-            # /Check kernel_names list
-            for kernel_name in kernel_names:
-                display_name = kernels_dict[kernel_name]["display_name"]
-                language = kernels_dict[kernel_name]["language"]
-                interpreter = kernels_dict[kernel_name]["interpreter"]
-                remote_host = kernels_dict[kernel_name]["remote_host"]
-                kernel_abs_path = join(kernels_location, kernel_name)
-                if exists(kernel_abs_path) and isfile(kernel_abs_path):
-                    remove(kernel_abs_path)
-                if not exists(kernel_abs_path):
-                    # Create directory
-                    create_directory(kernel_abs_path, 0o755)
-                    # Copy logos
-                    copy_logos(img_location, logo_name_srt, kernel_abs_path)
-                    # Create kernel.json
-                    create_kernel_json_file(display_name, language, script,
-                                            interpreter, connection_file,
-                                            remote_host, kernel_abs_path)
-                    print(messages["_installed"] % kernel_name)
-                else:
-                    print(messages["_delete"] % kernel_name)
-                    answer = raw_input()
-                    answer_lower = answer.lower()
-                    if ((answer_lower == 'y') or (answer_lower == 'yes') or
-                            (answer_lower == 'yep')):
-                        args.kernel_names = [kernel_name]
-                        uninstall_kernel(args)
-                        install_kernel(args)
-    else:
-        print(messages["_error_NoRoot"])
-        exit(1)
 
 def main():
     """Main function"""
@@ -305,7 +368,7 @@ def show_kernels_list(args):
     config_kernels_rel_path = config["config_kernels_rel_path"]
     config_kernels_abs_path = join(module_location, config_kernels_rel_path)
     # Load kernels.json file
-    with open(config_kernels_abs_path) as f:
+    with open(config_kernels_abs_path, 'r') as f:
         kernels_dict = load(f)
     # Create kernels list from kernels dict
     kernels_list = [k for k in kernels_dict.keys()]
