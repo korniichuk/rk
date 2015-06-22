@@ -349,45 +349,79 @@ def uninstall_all(args):
 def uninstall_kernel(args):
     """Uninstall remote jupyter kernel/kernels"""
 
-    if getuid() == 0:
-        kernels_location = config["kernels_location"]
-        kernel_names = args.kernel_names
-        if kernel_names == None:
-            # Uninstall template of remote kernel
-            kernel_name = config["kernel_name"]
-            kernel_abs_path = join(kernels_location, kernel_name)
-            if exists(kernel_abs_path):
-                if isdir(kernel_abs_path):
-                    rmtree(kernel_abs_path, ignore_errors=True)
-                elif isfile(kernel_abs_path):
+    kernels_location = config["kernels_location"]
+    if '~' in kernels_location:
+        kernels_location = expanduser(kernels_location)
+    kernel_names = args.kernel_names
+    if kernel_names == None:
+        # Uninstall template of remote kernel
+        kernel_name = config["kernel_name"]
+        kernel_abs_path = join(kernels_location, kernel_name)
+        if exists(kernel_abs_path):
+            if isdir(kernel_abs_path):
+                try:
+                    rmtree(kernel_abs_path)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
+            elif isfile(kernel_abs_path):
+                try:
                     remove(kernel_abs_path)
-                print(messages["_uninstalled_template"])
-            else:
-                print(messages["_error_NoTemplate"])
-                exit(1)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
+            print(messages["_uninstalled_template"])
         else:
-            # Uninstall kernel/kernels
-            # Check kernel_names list/
-            no_kernel_names = []
-            for kernel_name in kernel_names:
-                kernel_abs_path = join(kernels_location, kernel_name)
-                if not exists(kernel_abs_path):
-                    no_kernel_names.append(kernel_name)
-            if len(no_kernel_names) != 0:
-                if len(no_kernel_names) == 1:
-                    print(messages["_error_NoKernel"] % kernel_name)
-                else:
-                     print(messages["_error_NoKernels"] %
-                             '\' \''.join(no_kernel_names))
-                exit(1)
-            # /Check kernel_names list
-            for kernel_name in kernel_names:
-                kernel_abs_path = join(kernels_location, kernel_name)
-                if isdir(kernel_abs_path):
-                    rmtree(kernel_abs_path, ignore_errors=True)
-                elif isfile(kernel_abs_path):
-                    remove(kernel_abs_path)
-                print(messages["_uninstalled"] % kernel_name)
+            print(messages["_error_NoTemplate"])
+            exit(1)
     else:
-        print(messages["_error_NoRoot"])
-        exit(1)
+        # Uninstall kernel/kernels
+        # Check kernel_names list/
+        no_kernel_names = []
+        for kernel_name in kernel_names:
+            kernel_abs_path = join(kernels_location, kernel_name)
+            if not exists(kernel_abs_path):
+                no_kernel_names.append(kernel_name)
+        if len(no_kernel_names) != 0:
+            if len(no_kernel_names) == 1:
+                print(messages["_error_NoKernel"] % kernel_name)
+            else:
+                print(messages["_error_NoKernels"] %
+                        '\' \''.join(no_kernel_names))
+            exit(1)
+        # /Check kernel_names list
+        for kernel_name in kernel_names:
+            kernel_abs_path = join(kernels_location, kernel_name)
+            if isdir(kernel_abs_path):
+                try:
+                    rmtree(kernel_abs_path)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
+            elif isfile(kernel_abs_path):
+                try:
+                    remove(kernel_abs_path)
+                except Exception as exception: # Python3 PermissionError
+                    error_code = exception.errno
+                    if error_code == EACCES: # 13
+                        print(messages["_error_NoRoot"])
+                        exit(1)
+                    else:
+                        print(messages["_error_Oops"] % strerror(error_code))
+                        exit(1)
+            print(messages["_uninstalled"] % kernel_name)
