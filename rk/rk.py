@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from argparse import ArgumentParser
-from errno import ENOTDIR
+from errno import EACCES, ENOTDIR
 from getpass import getuser
 from json import dumps, load
-from os import getuid, link, listdir, makedirs, remove
+from os import getuid, link, listdir, makedirs, remove, strerror
 from os.path import dirname, exists, expanduser, isdir, isfile, join
 from shutil import rmtree
 from subprocess import call
