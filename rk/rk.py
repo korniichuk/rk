@@ -319,25 +319,32 @@ def show_kernels_list(args):
 def uninstall_all(args):
     """Uninstall all jupyter kernels from kernels location"""
 
-    if getuid() == 0:
-        kernels_location = config["kernels_location"]
-        kernel_names = []
-        for element in listdir(kernels_location):
-            element_abs_path = join(kernels_location, element)
-            if isdir(element_abs_path):
-                rmtree(element_abs_path, ignore_errors=True)
-                kernel_names.append(element)
-        kernel_names.sort()
-        if len(kernel_names) == 0:
-            print(messages["_uninstalled_all_zero"])
-        elif len(kernel_names) == 1:
-            print(messages["_uninstalled_all"] % kernel_names[0])
-        else:
-            print(messages["_uninstalled_all_multiple"] %
-                    '\' \''.join(kernel_names))
+    kernels_location = config["kernels_location"]
+    if '~' in kernels_location:
+        kernels_location = expanduser(kernels_location)
+    kernel_names = []
+    for element in listdir(kernels_location):
+        element_abs_path = join(kernels_location, element)
+        if isdir(element_abs_path):
+            try:
+                rmtree(element_abs_path)
+            except Exception as exception: # Python3 PermissionError
+                error_code = exception.errno
+                if error_code == EACCES: # 13
+                    print(messages["_error_NoRoot"])
+                    exit(1)
+                else:
+                    print(messages["_error_Oops"] % strerror(error_code))
+                    exit(1)
+            kernel_names.append(element)
+    kernel_names.sort()
+    if len(kernel_names) == 0:
+        print(messages["_uninstalled_all_zero"])
+    elif len(kernel_names) == 1:
+        print(messages["_uninstalled_all"] % kernel_names[0])
     else:
-        print(messages["_error_NoRoot"])
-        exit(1)
+        print(messages["_uninstalled_all_multiple"] %
+                '\' \''.join(kernel_names))
 
 def uninstall_kernel(args):
     """Uninstall remote jupyter kernel/kernels"""
