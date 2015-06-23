@@ -193,15 +193,13 @@ Kernels location
 ----------------
 Jupyter support the system and the user `kernels locations <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_:
 
-+----------+------------------------------------+
-|          |kernels location                    |
-+==========+====================================+
-|**system**|``/usr/local/share/jupyter/kernels``|
-|          |                                    |
-|          |``/usr/share/jupyter/kernels``      |
-+----------+------------------------------------+
-|**user**  |``~/.ipython/kernels``              |
-+----------+------------------------------------+
++----------+--------------------------------------------------------------------+
+|          |kernels location                                                    |
++==========+====================================================================+
+|**system**|``/usr/local/share/jupyter/kernels``; ``/usr/share/jupyter/kernels``|
++----------+--------------------------------------------------------------------+
+|**user**  |``~/.ipython/kernels``                                              |
++----------+--------------------------------------------------------------------+
 
 The default kernels location in the rk: ``/usr/local/share/jupyter/kernels``.
 
