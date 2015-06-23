@@ -62,12 +62,11 @@ Example::
 
 .. note:: You can `setup SSH for auto login without a password`_ like this: ``$ rk ssh``.
 
-**Second**, install a template of a remote jupyter kernel::
+**Second**, install a template of a remote jupyter kernel to `kernels location`_::
 
     $ rk install-template
 
-The rk created a template of a remote jupyter kernel inside system kernels location ``/usr/local/share/jupyter/kernels``.
-A kernel identifies itself to jupyter by creating a directory, the name of which is used as an identifier for the kernel [1]_.
+The rk created a template of a remote jupyter kernel inside system `kernels location`_ ``/usr/local/share/jupyter/kernels``.
 
 **Third**, change the ``kernel.json`` file::
 
@@ -192,14 +191,33 @@ Where:
   * ``albert`` -- the remote username on a remote machine, not similar with a username on a local machine,
   * ``192.168.0.1`` -- the remote host.
 
+Kernels location
+----------------
+Jupyter support the system and the user `kernels locations <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_:
+
++----------+------------------------------------+
+|          |kernels location                    |
++==========+====================================+
+|**system**|``/usr/local/share/jupyter/kernels``|
+|          |``/usr/share/jupyter/kernels``      |
++----------+------------------------------------+
+|**user**  |``~/.ipython/kernels``              |
++----------+------------------------------------+
+
+The default kernels location in the rk: ``/usr/local/share/jupyter/kernels``.
+
+Change the default kernels location: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
+
+.. important:: The user kernels location takes priority over the system kernels locations.
+
 Show list of remote jupyter kernels from kernels dict
 -----------------------------------------------------
 ::
 
     $ rk list
 
-Install a remote jupyter kernel/kernels
----------------------------------------
+Install a remote jupyter kernel/kernels from kernels dict to kernels location
+-----------------------------------------------------------------------------
 ::
 
     $ rk install KERNEL_NAME [KERNEL_NAME ...]
@@ -213,23 +231,22 @@ Example::
     $ rk install albert2
     $ rk install albert2 albert3
 
-Install a template of a remote jupyter kernel
----------------------------------------------
+Install a template of a remote jupyter kernel to kernels location
+-----------------------------------------------------------------
 ::
 
     $ rk install-template
 
 .. important:: After this subcommand open the  ``kernel.json`` file and change values of dict: ``$ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json``.
 
-
-Install all remote jupyter kernels from kernels dict
-----------------------------------------------------
+Install all remote jupyter kernels from kernels dict to kernels location
+------------------------------------------------------------------------
 ::
 
     $ rk install-all
 
-Uninstall a remote jupyter kernel/kernels
------------------------------------------
+Uninstall a remote jupyter kernel/kernels from kernels location
+---------------------------------------------------------------
 ::
 
     $ rk uninstall KERNEL_NAME [KERNEL_NAME ...]
@@ -243,8 +260,8 @@ Example::
     $ rk uninstall albert2
     $ rk uninstall albert2 albert3
 
-Uninstall a template of a remote jupyter kernel
------------------------------------------------
+Uninstall a template of a remote jupyter kernel from kernels location
+---------------------------------------------------------------------
 ::
 
     $ rk uninstall-template
@@ -254,8 +271,6 @@ Uninstall all jupyter kernels from kernels location
 ::
 
     $ rk uninstall-all
-
-.. note:: The default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_ in the rk: ``/usr/local/share/jupyter/kernels``. Change the default `kernels location <http://ipython.org/ipython-doc/dev/development/kernels.html#kernel-specs>`_: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
 
 Setup SSH for auto login without a password
 -------------------------------------------
@@ -305,7 +320,8 @@ Legend
 
 rk 0.3
 ------
-* bug in the rk: a superuser (root) privileges required for the kernel specs user location ``~/.ipython/kernels``.
+
+* bug in the rk: a superuser (root) privileges required for the user kernels location ``~/.ipython/kernels``.
 * **setup SSH for auto login without a password with a "ssh" subcommand.**
 * error in the rkscript: list index out of range.
 * **info about working remote jupyter kernel in rk log file.**
@@ -317,9 +333,9 @@ rk 0.2
 ------
 
 * **uninstall all jupyter kernels from kernels location with a "uninstall-all" subcommand.**
-* **uninstall remote jupyter kernel/kernels with a "uninstall" subcommand.**
-* **install remote jupyter kernel/kernels with a "install" subcommand.**
-* **install all remote jupyter kernels from kernels dict with a "install-all" subcommand.**
+* **uninstall a remote jupyter kernel/kernels from kernels location with a "uninstall" subcommand.**
+* **install a remote jupyter kernel/kernels from kernels dict to kernels location with a "install" subcommand.**
+* **install all remote jupyter kernels from kernels dict to kernels location with a "install-all" subcommand.**
 * **show list of remote jupyter kernels from kernels dict with a "list" subcommand.**
 
 .. rubric:: Footnotes
