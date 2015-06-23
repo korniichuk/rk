@@ -66,8 +66,6 @@ Example::
 
     $ rk install-template
 
-The rk created a template of a remote jupyter kernel inside system `kernels location`_ ``/usr/local/share/jupyter/kernels``.
-
 **Third**, change the ``kernel.json`` file::
 
    $ sudo gedit /usr/local/share/jupyter/kernels/template/kernel.json
@@ -199,6 +197,7 @@ Jupyter support the system and the user `kernels locations <http://ipython.org/i
 |          |kernels location                    |
 +==========+====================================+
 |**system**|``/usr/local/share/jupyter/kernels``|
+|          |                                    |
 |          |``/usr/share/jupyter/kernels``      |
 +----------+------------------------------------+
 |**user**  |``~/.ipython/kernels``              |
@@ -206,7 +205,9 @@ Jupyter support the system and the user `kernels locations <http://ipython.org/i
 
 The default kernels location in the rk: ``/usr/local/share/jupyter/kernels``.
 
-Change the default kernels location: ``$ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini``.
+Change the default kernels location::
+
+    $ sudo gedit /usr/local/lib/python2.7/dist-packages/rk/config/rk.ini
 
 .. important:: The user kernels location takes priority over the system kernels locations.
 
