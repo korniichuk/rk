@@ -305,6 +305,7 @@ Legend
 
 rk 0.3
 ------
+* bug in the rk: a superuser (root) privileges required for the kernel specs user location ``~/.ipython/kernels``.
 * **setup SSH for auto login without a password with a "ssh" subcommand.**
 * error in the rkscript: list index out of range.
 * **info about working remote jupyter kernel in rk log file.**
