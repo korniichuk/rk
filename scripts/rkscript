@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """Remote jupyter kernel via SSH
@@ -7,11 +7,11 @@ Make sure that you can login to a remote machine without entering password.
 """
 
 from datetime import datetime
-from errno import ENOTDIR
+from errno import EACCES, ENOTDIR
 from getpass import getuser
 from json import load
 from os import chmod, getcwd, getpid, makedirs, remove
-from os.path import dirname, exists, isfile, join, split
+from os.path import dirname, exists, expanduser, isfile, join, split
 from site import getsitepackages
 from sys import argv
 
@@ -40,16 +40,40 @@ def create_directory(directory_name, mode=0o777):
 
     try:
         makedirs(directory_name, mode)
-    except OSError as exception: # Python3 NotADirectoryError
-        if exception.errno == ENOTDIR:
-             path = directory_name
-             while path != '/':
-                 if isfile(path):
-                     remove(path)
-                 path = dirname(path)
-             makedirs(directory_name, mode)
+    except Exception as exception:
+        error_code = exception.errno
+        if error_code == EACCES: # 13 (Python3 PermissionError)
+            print(messages["_error_NoRoot"])
+            exit(1)
+        elif error_code == ENOTDIR: # 20 (Python3 NotADirectoryError)
+            path = directory_name
+            while path != '/':
+                if isfile(path):
+                    try:
+                        remove(path)
+                    except Exception as exception: # Python3 PermissionError
+                        error_code = exception.errno
+                        if error_code == EACCES: # 13
+                            print(messages["_error_NoRoot"])
+                            exit(1)
+                        else:
+                            print(messages["_error_Oops"] %
+                                    strerror(error_code))
+                            exit(1)
+                path = dirname(path)
+            try:
+                makedirs(directory_name, mode)
+            except Exception as exception: # Python3 PermissionError
+                error_code = exception.errno
+                if error_code == EACCES: # 13
+                    print(messages["_error_NoRoot"])
+                    exit(1)
+                else:
+                    print(messages["_error_Oops"] % strerror(error_code))
+                    exit(1)
         else:
-            raise exception
+            print(messages["_error_Oops"] % strerror(error_code))
+            exit(1)
 
 def get_date_time():
     """Get yyyy-mm-dd_hh.mm.ss"""
@@ -112,7 +136,7 @@ else:
     remote_username = local_username
     remote_host = remote_username_at_remote_host
 # Load a connection file
-with open(local_connection_file) as f:
+with open(local_connection_file, 'r') as f:
     cfg = load(f)
 # GET a current working directory of a process
 cwd = getcwd()
@@ -199,9 +223,20 @@ date, time = date_time.replace('.', ':').split('_')
 date = date + ' ' + week[datetime.weekday(datetime.now())]
 rk_log_file_name = "%s@%s_%s.txt" % (local_username, remote_host, date_time)
 rk_log_location = config["rk_log_location"]
+if '~' in rk_log_location:
+    rk_log_location = expanduser(rk_log_location)
 rk_log_abs_path = join(rk_log_location, rk_log_file_name)
 if exists(rk_log_location) and isfile(rk_log_location):
-    remove(rk_log_location)
+    try:
+        remove(rk_log_location)
+    except Exception as exception: # Python3 PermissionError
+        error_code = exception.errno
+        if error_code == EACCES: # 13
+            print(messages["_error_NoRoot"])
+            exit(1)
+        else:
+            print(messages["_error_Oops"] % strerror(error_code))
+            exit(1)
 if not exists(rk_log_location):
     create_directory(rk_log_location, 0o777)
     path = rk_log_location
@@ -211,25 +246,53 @@ if not exists(rk_log_location):
         except OSError:
             break
         path = dirname(path)
-with open(rk_log_abs_path, 'w') as f:
-    f.write("date: %s\n" % date)
-    f.write("time: %s\n" % time)
-    f.write("\n")
-    if local_username == remote_username:
-        f.write("usernames: %s\n" % local_username)
+try:
+    with open(rk_log_abs_path, 'w') as f:
+        f.write("date: %s\n" % date)
+        f.write("time: %s\n" % time)
+        f.write("\n")
+        if local_username == remote_username:
+            f.write("usernames: %s\n" % local_username)
+        else:
+            f.write("usernames: %s<->%s\n" % (local_username, remote_username))
+        f.write("remote host: %s\n" % remote_host)
+        f.write("\n")
+        for k,v in local_ports.items():
+            f.write("%ss: %s<->%s\n" % (k.replace('_', ' '), v,
+                                        remote_ports[k]))
+        f.write("\n")
+        f.write("pids: %s<->%s\n" % (local_pid, remote_pid))
+except Exception as exception:
+    error_code = exception.errno
+    if error_code == EACCES: # 13 (Python3 PermissionError)
+        print(messages["_error_NoRoot"])
+        exit(1)
     else:
-        f.write("usernames: %s<->%s\n" % (local_username, remote_username))
-    f.write("remote host: %s\n" % remote_host)
-    f.write("\n")
-    for k,v in local_ports.items():
-        f.write("%ss: %s<->%s\n" % (k.replace('_', ' '), v, remote_ports[k]))
-    f.write("\n")
-    f.write("pids: %s<->%s\n" % (local_pid, remote_pid))
+        print(messages["_error_Oops"] % strerror(error_code))
+        exit(1)
 # Waits for closing, i.e. remote_exec() finish
 ch.waitclose()
 # Delete paramiko log file
 if exists(paramiko_log_abs_path) and isfile(paramiko_log_abs_path):
-    remove(paramiko_log_abs_path)
+    try:
+        remove(paramiko_log_abs_path)
+    except Exception as exception:
+        error_code = exception.errno
+        if error_code == EACCES: # 13 (Python3 PermissionError)
+            print(messages["_error_NoRoot"])
+            exit(1)
+        else:
+            print(messages["_error_Oops"] % strerror(error_code))
+            exit(1)
 # Delete rk log file
 if exists(rk_log_abs_path) and isfile(rk_log_abs_path):
-    remove(rk_log_abs_path)
+    try:
+        remove(rk_log_abs_path)
+    except Exception as exception:
+        error_code = exception.errno
+        if error_code == EACCES: # 13 (Python3 PermissionError)
+            print(messages["_error_NoRoot"])
+            exit(1)
+        else:
+            print(messages["_error_Oops"] % strerror(error_code))
+            exit(1)

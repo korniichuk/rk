@@ -320,6 +320,7 @@ Legend
 rk 0.3
 ------
 
+* bug in the rk and in the rkscript: an initial component of ``~`` or ``~user`` is not replaced in a paths.
 * bug in the rk: a superuser (root) privileges required for the user kernels location ``~/.ipython/kernels``.
 * **setup SSH for auto login without a password with a "ssh" subcommand.**
 * error in the rkscript: list index out of range.

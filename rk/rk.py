@@ -260,7 +260,8 @@ def parse_command_line_args():
     # Create top parser
     parser = ArgumentParser(prog="rk", description=argparse["_parser"],
                             add_help=True)
-    parser.add_argument("-v", "--version", action="version", version="rk 0.3a3")
+    parser.add_argument("-v", "--version", action="version",
+                        version="rk 0.3a4")
     # Create subparsers for the top parser
     subparsers = parser.add_subparsers(title=argparse["_subparsers"])
     # Create the parser for the "list" subcommand
