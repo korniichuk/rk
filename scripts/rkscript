@@ -144,7 +144,7 @@ cwd = getcwd()
 gw = makegateway("ssh=%s//python=%s" % (remote_username_at_remote_host,
                                         interpreter))
 ch = gw.remote_exec("""
-    import socket    
+    import socket
     from json import dumps
     from os import chdir, getcwd, getpid, remove
     from os.path import exists, expanduser, isdir, isfile, join, split
@@ -180,20 +180,31 @@ ch = gw.remote_exec("""
             with open(remote_connection_file, 'w') as f:
                 f.write(dumps(cfg))
         else:
-            path = "~/.ipython/profile_default/security"
-            default_dir_name = (expanduser(path))
-            if ((default_dir_name != dir_name) and exists(default_dir_name) and
-                    isdir(default_dir_name)):
-                remote_connection_file = join(default_dir_name, file_name)
-                # Write a connection file to default directory
+            default_j4_dir_name = "/run/user/1000/jupyter"
+            if ((default_j4_dir_name != dir_name) and
+                    exists(default_j4_dir_name) and
+                    isdir(default_j4_dir_name)):
+                remote_connection_file = join(default_j4_dir_name, file_name)
+                # Write a connection file to jupyter 4 "j4" default dir
                 with open(remote_connection_file, 'w') as f:
                     f.write(dumps(cfg))
             else:
-                cwd = getcwd()
-                remote_connection_file = join(cwd, file_name)
-                # Write a connection file to cwd
-                with open(remote_connection_file, 'w') as f:
-                    f.write(dumps(cfg))
+                path = "~/.ipython/profile_default/security"
+                default_j3_dir_name = (expanduser(path))
+                if ((default_j3_dir_name != dir_name) and
+                        exists(default_j3_dir_name) and
+                        isdir(default_j3_dir_name)):
+                    remote_connection_file = join(default_j3_dir_name,
+                                                  file_name)
+                    # Write a connection file to jupyter 3 "j3" default dir
+                    with open(remote_connection_file, 'w') as f:
+                        f.write(dumps(cfg))
+                else:
+                    cwd = getcwd()
+                    remote_connection_file = join(cwd, file_name)
+                    # Write a connection file to cwd
+                    with open(remote_connection_file, 'w') as f:
+                        f.write(dumps(cfg))
     # SET a current working directory of a process
     if exists(last_cwd) and isdir(last_cwd):
         chdir(last_cwd)
