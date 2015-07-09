@@ -10,6 +10,7 @@ setup(
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
         "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
         "Intended Audience :: Science/Research",
         "Intended Audience :: System Administrators",
         "License :: Public Domain",
