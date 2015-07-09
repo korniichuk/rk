@@ -1,5 +1,5 @@
 _parser
-Remote jupyter kernel/kernels administration utility
+The remote jupyter kernel/kernels administration utility
 _subparsers
 subcommands
 _parser_install

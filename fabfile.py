@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-"""Remote jupyter kernel/kernels administration utility fabric file"""
+"""The remote jupyter kernel/kernels administration utility fabric file"""
 
 from fabric.api import local
 
