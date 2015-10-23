@@ -7,7 +7,7 @@ setup(
     author = "Ruslan Korniichuk",
     author_email = "ruslan.korniichuk@gmail.com",
     classifiers = [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
@@ -23,7 +23,7 @@ setup(
         "Topic :: System :: Systems Administration",
         "Topic :: Utilities"
     ],
-    description = ("The remote jupyter kernel/kernels administration utility"),
+    description = "The remote jupyter kernel/kernels administration utility",
     download_url = "https://github.com/korniichuk/rk/archive/0.3.zip",
     entry_points = {
         'console_scripts': 'rk = rk.rk:main'
@@ -42,6 +42,6 @@ setup(
     platforms = ["Linux"],
     scripts=['scripts/rkscript'],
     url = "https://github.com/korniichuk/rk",
-    version = "0.3a5",
+    version = "0.3b1",
     zip_safe = True
 )

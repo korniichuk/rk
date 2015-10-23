@@ -6,7 +6,7 @@
 from fabric.api import local
 
 def git():
-    """Setup git"""
+    """Setup Git"""
 
     local("git remote rm origin")
     local("git remote add origin https://korniichuk@github.com/korniichuk/rk.git")
